@@ -18,11 +18,11 @@ enum Status {
   COMPLETED
 }
 
-model Team {
-  id Int @id @default(autoincrement())
-  name String @unique
-  color String
-  tasks Tasks[]
+model Teams {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  color     String
+  tasks     Tasks[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -30,15 +30,13 @@ model Team {
 }
 
 model Tasks {
-  id Int @id @default(autoincrement())
-  title String
+  id          Int      @id @default(autoincrement())
+  title       String
   description String?
-  status Status @default(PENDING)
-  team Team[]
-  teamId Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  status      Status   @default(PENDING)
+  teams       Teams[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@map("tasks")
 }
-
