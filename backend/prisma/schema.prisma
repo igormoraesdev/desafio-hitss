@@ -11,3 +11,34 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+enum Status {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+}
+
+model Team {
+  id Int @id @default(autoincrement())
+  name String @unique
+  color String
+  tasks Tasks[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("team")
+}
+
+model Tasks {
+  id Int @id @default(autoincrement())
+  title String
+  description String?
+  status Status @default(PENDING)
+  team Team[]
+  teamId Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("tasks")
+}
+
