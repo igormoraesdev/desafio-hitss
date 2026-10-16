@@ -10,6 +10,7 @@ export interface TeamsRepository {
   findAll(params: PageParams): Promise<PageResult<Teams>>;
   findById(id: number): Promise<Teams | null>;
   findByName(name: string): Promise<Teams | null>;
+  findManyByIds(ids: number[]): Promise<Teams[]>;
   update(id: number, data: UpdateTeamDto): Promise<Teams>;
   remove(id: number): Promise<void>;
 }

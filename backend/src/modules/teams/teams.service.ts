@@ -71,6 +71,18 @@ export class TeamsService {
     this.logger.info({ teamId: id }, 'Time removido');
   }
 
+  async ensureAllExist(ids: number[]): Promise<void> {
+    const found = await this.repository.findManyByIds(ids);
+    const foundIds = new Set(found.map((team) => team.id));
+    const missing = ids.filter((id) => !foundIds.has(id));
+    if (missing.length > 0) {
+      this.logger.warn({ teamIds: missing }, 'Times não encontrados');
+      throw new NotFoundException(
+        `Times não encontrados: ${missing.join(', ')}`,
+      );
+    }
+  }
+
   private async verifyNameIsAvailable(name: string): Promise<void> {
     const existing = await this.repository.findByName(name);
     if (existing) {

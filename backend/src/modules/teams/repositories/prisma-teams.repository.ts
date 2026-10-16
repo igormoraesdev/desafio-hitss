@@ -35,6 +35,10 @@ export class PrismaTeamsRepository implements TeamsRepository {
     return this.prisma.teams.findUnique({ where: { name } });
   }
 
+  findManyByIds(ids: number[]): Promise<Teams[]> {
+    return this.prisma.teams.findMany({ where: { id: { in: ids } } });
+  }
+
   update(id: number, data: UpdateTeamDto): Promise<Teams> {
     return this.prisma.teams.update({ where: { id }, data });
   }

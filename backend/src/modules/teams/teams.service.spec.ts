@@ -38,6 +38,7 @@ describe('TeamsService', () => {
       findAll: jest.fn(),
       findById: jest.fn(),
       findByName: jest.fn(),
+      findManyByIds: jest.fn(),
       update: jest.fn(),
       remove: jest.fn(),
     };
@@ -145,6 +146,23 @@ describe('TeamsService', () => {
 
       await expect(service.update(99, { name: 'X' })).rejects.toBeInstanceOf(
         NotFoundException,
+      );
+    });
+  });
+
+  describe('ensureAllExist', () => {
+    it('resolve quando todos os ids existem', async () => {
+      repository.findManyByIds.mockResolvedValue([team, { ...team, id: 2 }]);
+
+      await expect(service.ensureAllExist([1, 2])).resolves.toBeUndefined();
+      expect(repository.findManyByIds).toHaveBeenCalledWith([1, 2]);
+    });
+
+    it('lança NotFoundException listando os ids ausentes', async () => {
+      repository.findManyByIds.mockResolvedValue([team]);
+
+      await expect(service.ensureAllExist([1, 7, 9])).rejects.toThrow(
+        'Times não encontrados: 7, 9',
       );
     });
   });
