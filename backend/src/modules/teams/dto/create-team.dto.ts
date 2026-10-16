@@ -1,11 +1,9 @@
 import { Transform } from 'class-transformer';
 import { IsNotEmpty, IsString, Matches, MaxLength } from 'class-validator';
+import { trim } from 'src/common/utils/string';
 
 const HEX_COLOR = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
 const NAME_MAX_LENGTH = 50;
-
-const trim = ({ value }: { value: unknown }) =>
-  typeof value === 'string' ? value.trim() : value;
 
 export class CreateTeamDto {
   @Transform(trim)
