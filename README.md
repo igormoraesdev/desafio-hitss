@@ -26,28 +26,31 @@ Transversal a tudo, em `src/common`: um interceptor que envelopa toda resposta e
 
 ## 2. Modelo de dados
 
-```mermaid
-erDiagram
-    teams ||--o{ _TasksToTeams : ""
-    tasks ||--o{ _TasksToTeams : ""
-    teams {
-        int id PK
-        string name UK
-        string color
-        datetime createdAt
-        datetime updatedAt
-    }
-    tasks {
-        int id PK
-        string title
-        string description "opcional"
-        enum status "PENDING | IN_PROGRESS | COMPLETED"
-        datetime createdAt
-        datetime updatedAt
-    }
+Duas entidades e uma relação muitos-para-muitos entre elas.
+
+```jsonc
+// teams
+{
+  "id": 1,                 // inteiro, autoincremento
+  "name": "Frontend",      // único
+  "color": "#3b82f6",      // hexadecimal
+  "createdAt": "2026-10-16T12:00:00.000Z",
+  "updatedAt": "2026-10-16T12:00:00.000Z"
+}
+
+// tasks
+{
+  "id": 4,
+  "title": "Integrar app com a API",
+  "description": "Cliente HTTP e tratamento do envelope",   // opcional
+  "status": "IN_PROGRESS",   // PENDING | IN_PROGRESS | COMPLETED, nasce PENDING
+  "teams": [ { "id": 1, "name": "Frontend", "color": "#3b82f6" } ],   // zero ou mais
+  "createdAt": "2026-10-16T12:00:00.000Z",
+  "updatedAt": "2026-10-16T12:00:00.000Z"
+}
 ```
 
-Um time tem um nome único e uma cor. Uma tarefa tem título, descrição opcional e status, e pode pertencer a zero ou mais times. A tabela de junção é implícita do Prisma e some junto quando um lado é apagado: remover um time não remove as tarefas, só o vínculo.
+A relação entre `tasks` e `teams` fica numa tabela de junção (`_TasksToTeams`) que o Prisma gera e mantém sozinho. Apagar um time não apaga as tarefas, só o vínculo; o inverso também vale.
 
 As três migrations em `backend/prisma/migrations` contam a história: a primeira cria o schema, as outras duas renomeiam `team` para `teams`. A terceira foi escrita à mão com `ALTER TABLE ... RENAME` porque o Prisma, sozinho, geraria um drop/create e perderia os dados.
 
