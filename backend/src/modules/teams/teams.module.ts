@@ -10,5 +10,6 @@ import { TeamsService } from './teams.service';
     TeamsService,
     { provide: TEAMS_REPOSITORY, useClass: PrismaTeamsRepository },
   ],
+  exports: [TeamsService],
 })
 export class TeamsModule {}
