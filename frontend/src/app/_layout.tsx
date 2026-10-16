@@ -1,5 +1,7 @@
+import { theme } from "@/styles/theme";
 import { Roboto_400Regular } from "@expo-google-fonts/roboto/400Regular";
 import { Roboto_700Bold } from "@expo-google-fonts/roboto/700Bold";
+import { DripsyProvider } from "dripsy";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
@@ -23,5 +25,9 @@ export default function RootLayout() {
     return null;
   }
 
-  return <Stack screenOptions={{ headerShown: false }} />;
+  return (
+    <DripsyProvider theme={theme}>
+      <Stack screenOptions={{ headerShown: false }} />
+    </DripsyProvider>
+  );
 }
