@@ -6,10 +6,10 @@ import {
 } from '@nestjs/common';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 import { Paginated, paginate } from 'src/common/pagination/pagination';
-import { PaginationQueryDto } from 'src/common/pagination/pagination-query.dto';
 import { Tasks } from 'src/generated/prisma/client';
 import { TeamsService } from '../teams/teams.service';
 import { CreateTaskDto } from './dto/create-task.dto';
+import { FindTasksQueryDto } from './dto/find-tasks-query.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import {
   TASKS_REPOSITORY,
@@ -34,12 +34,18 @@ export class TasksService {
     return task;
   }
 
-  async findAll(query: PaginationQueryDto): Promise<Paginated<Tasks>> {
+  async findAll(query: FindTasksQueryDto): Promise<Paginated<Tasks>> {
+    const filters = query.toFilters();
+    const sort = query.toSort();
     this.logger.debug(
-      { page: query.page, limit: query.limit },
+      { page: query.page, limit: query.limit, filters, sort },
       'Listando tasks',
     );
-    const result = await this.repository.findAll(query.toPageParams());
+    const result = await this.repository.findAll({
+      filters,
+      sort,
+      page: query.toPageParams(),
+    });
     return paginate(result, query);
   }
 

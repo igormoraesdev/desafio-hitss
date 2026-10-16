@@ -12,9 +12,9 @@ import {
   Query,
 } from '@nestjs/common';
 import { Paginated } from 'src/common/pagination/pagination';
-import { PaginationQueryDto } from 'src/common/pagination/pagination-query.dto';
 import { Tasks } from 'src/generated/prisma/client';
 import { CreateTaskDto } from './dto/create-task.dto';
+import { FindTasksQueryDto } from './dto/find-tasks-query.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { TasksService } from './tasks.service';
 
@@ -28,7 +28,7 @@ export class TasksController {
   }
 
   @Get()
-  findAll(@Query() query: PaginationQueryDto): Promise<Paginated<Tasks>> {
+  findAll(@Query() query: FindTasksQueryDto): Promise<Paginated<Tasks>> {
     return this.tasksService.findAll(query);
   }
 

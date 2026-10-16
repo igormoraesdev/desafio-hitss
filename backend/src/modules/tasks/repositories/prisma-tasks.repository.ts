@@ -1,12 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { PageParams, PageResult } from 'src/common/pagination/pagination';
+import { PageResult } from 'src/common/pagination/pagination';
+import { buildOrderBy, buildWhere, toIdRefs } from 'src/common/utils/filters';
 import { Tasks } from 'src/generated/prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateTaskDto } from '../dto/create-task.dto';
 import { UpdateTaskDto } from '../dto/update-task.dto';
-import { TasksRepository } from './tasks.repository';
-
-const toIdRefs = (ids: number[]) => ids.map((id) => ({ id }));
+import { FindTasksOptions, TasksRepository } from './tasks.repository';
 
 @Injectable()
 export class PrismaTasksRepository implements TasksRepository {
@@ -22,15 +21,21 @@ export class PrismaTasksRepository implements TasksRepository {
     });
   }
 
-  async findAll({ skip, take }: PageParams): Promise<PageResult<Tasks>> {
+  async findAll({
+    filters,
+    sort,
+    page,
+  }: FindTasksOptions): Promise<PageResult<Tasks>> {
+    const where = buildWhere(filters);
     const [items, total] = await this.prisma.$transaction([
       this.prisma.tasks.findMany({
-        skip,
-        take,
+        where,
+        skip: page.skip,
+        take: page.take,
         include: { teams: true },
-        orderBy: { title: 'asc' },
+        orderBy: buildOrderBy(sort),
       }),
-      this.prisma.tasks.count(),
+      this.prisma.tasks.count({ where }),
     ]);
     return { items, total };
   }

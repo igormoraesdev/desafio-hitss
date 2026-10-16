@@ -1,9 +1,9 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { getLoggerToken } from 'nestjs-pino';
-import { PaginationQueryDto } from 'src/common/pagination/pagination-query.dto';
 import { Tasks } from 'src/generated/prisma/client';
 import { TeamsService } from '../teams/teams.service';
+import { FindTasksQueryDto } from './dto/find-tasks-query.dto';
 import {
   TASKS_REPOSITORY,
   TasksRepository,
@@ -91,17 +91,40 @@ describe('TasksService', () => {
   describe('findAll', () => {
     it('devolve data e meta calculados a partir de page e limit', async () => {
       repository.findAll.mockResolvedValue({ items: [task], total: 23 });
-      const query = Object.assign(new PaginationQueryDto(), {
+      const query = Object.assign(new FindTasksQueryDto(), {
         page: 2,
         limit: 10,
       });
 
       const result = await service.findAll(query);
 
-      expect(repository.findAll).toHaveBeenCalledWith({ skip: 10, take: 10 });
+      expect(repository.findAll).toHaveBeenCalledWith({
+        filters: { status: undefined, teamId: undefined, search: undefined },
+        sort: { field: 'createdAt', order: 'desc' },
+        page: { skip: 10, take: 10 },
+      });
       expect(result).toEqual({
         data: [task],
         meta: { page: 2, limit: 10, total: 23, totalPages: 3 },
+      });
+    });
+
+    it('repassa filtros e ordenação ao repositório', async () => {
+      repository.findAll.mockResolvedValue({ items: [], total: 0 });
+      const query = Object.assign(new FindTasksQueryDto(), {
+        status: 'IN_PROGRESS',
+        teamId: 4,
+        search: 'readme',
+        sortBy: 'title',
+        order: 'asc',
+      });
+
+      await service.findAll(query);
+
+      expect(repository.findAll).toHaveBeenCalledWith({
+        filters: { status: 'IN_PROGRESS', teamId: 4, search: 'readme' },
+        sort: { field: 'title', order: 'asc' },
+        page: { skip: 0, take: 10 },
       });
     });
   });
