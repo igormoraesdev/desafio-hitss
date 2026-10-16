@@ -6,6 +6,7 @@ import { AppService } from './app.service';
 import { buildLoggerConfig } from './common/logger/logger.config';
 import { TeamsModule } from './modules/teams/teams.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { TasksModule } from './modules/tasks/tasks.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { PrismaModule } from './prisma/prisma.module';
     LoggerModule.forRoot(buildLoggerConfig()),
     PrismaModule,
     TeamsModule,
+    TasksModule,
   ],
   controllers: [AppController],
   providers: [AppService],
