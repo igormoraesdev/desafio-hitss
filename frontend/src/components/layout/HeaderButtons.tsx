@@ -1,15 +1,18 @@
-import { Flex } from "dripsy";
-import { ReactElement } from "react";
+import BackIcon from "@/assets/icons/back.svg";
+import TrashIcon from "@/assets/icons/trash.svg";
+import { createThemedComponent, Flex } from "dripsy";
 import { GestureResponderEvent } from "react-native";
-import { SvgProps } from "react-native-svg";
 import { Button } from "../ui/Button";
 
 type HeaderButtonsProps = {
-  leftIcon?: ReactElement | React.FC<SvgProps>;
-  righIcon?: ReactElement;
+  leftIcon?: boolean;
+  righIcon?: boolean;
   onLeftPress?: (event: GestureResponderEvent) => void;
   onRightPress?: (event: GestureResponderEvent) => void;
 };
+
+const BackIconComponent = createThemedComponent(BackIcon);
+const TrashIconComponent = createThemedComponent(TrashIcon);
 
 export const HeaderButtons = ({
   leftIcon,
@@ -29,12 +32,12 @@ export const HeaderButtons = ({
     >
       {leftIcon && (
         <Button hasStyle={false} onPress={onLeftPress}>
-          {leftIcon as ReactElement}
+          <BackIconComponent sx={{ color: "$white" }} />
         </Button>
       )}
       {righIcon && (
         <Button hasStyle={false} onPress={onRightPress}>
-          {righIcon as ReactElement}
+          <TrashIconComponent sx={{ color: "$white" }} />
         </Button>
       )}
     </Flex>
