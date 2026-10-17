@@ -1,22 +1,34 @@
-import { StyleSheet, Text } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import BackIcon from "@/assets/icons/back.svg";
+import TrashIcon from "@/assets/icons/trash.svg";
+import { Container } from "@/components/layout/Container";
+import { HeaderButtons } from "@/components/layout/HeaderButtons";
+import { Button } from "@/components/ui/Button";
+import { Box, createThemedComponent } from "dripsy";
+
+const BackIconComponent = createThemedComponent(BackIcon);
+const TrashIconComponent = createThemedComponent(TrashIcon);
 
 export default function HomeScreen() {
   return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Tarefas</Text>
-    </SafeAreaView>
+    <Container
+      header={
+        <HeaderButtons
+          leftIcon={<BackIconComponent sx={{ color: "$white" }} />}
+          righIcon={<TrashIconComponent sx={{ color: "$white" }} />}
+        />
+      }
+      content={
+        <Box
+          sx={{
+            flex: 1,
+            width: "100%",
+            backgroundColor: "$grey",
+            gap: "$3",
+          }}
+        >
+          <Button>Criar time</Button>
+        </Box>
+      }
+    />
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-});
