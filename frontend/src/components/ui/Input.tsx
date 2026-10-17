@@ -1,10 +1,9 @@
-import SearchIcon from "@/assets/icons/search.svg";
+import Feather from "@expo/vector-icons/Feather";
 import { createThemedComponent, Flex, styled, TextInput } from "dripsy";
-
 import { ComponentProps, forwardRef } from "react";
 import { TextInput as RNTextInput } from "react-native";
 
-const SearchIconComponent = createThemedComponent(SearchIcon);
+const SearchIconComponent = createThemedComponent(Feather);
 const StyledTextInput = styled(TextInput)();
 type InputProps = ComponentProps<typeof StyledTextInput> & {
   icon?: boolean;
@@ -47,7 +46,13 @@ export const Input = forwardRef<RNTextInput, InputProps>(
             marginRight: "$3",
           }}
         >
-          {icon && <SearchIconComponent sx={{ color: "$green" }} />}
+          {icon && (
+            <SearchIconComponent
+              size={24}
+              name="search"
+              sx={{ color: "$green" }}
+            />
+          )}
         </Flex>
       </Flex>
     );

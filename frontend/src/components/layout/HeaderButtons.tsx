@@ -1,5 +1,5 @@
-import BackIcon from "@/assets/icons/back.svg";
-import TrashIcon from "@/assets/icons/trash.svg";
+import Entypo from "@expo/vector-icons/Entypo";
+import Feather from "@expo/vector-icons/Feather";
 import { createThemedComponent, Flex } from "dripsy";
 import { GestureResponderEvent } from "react-native";
 import { Button } from "../ui/Button";
@@ -11,8 +11,8 @@ type HeaderButtonsProps = {
   onRightPress?: (event: GestureResponderEvent) => void;
 };
 
-const BackIconComponent = createThemedComponent(BackIcon);
-const TrashIconComponent = createThemedComponent(TrashIcon);
+const ChevronIconComponent = createThemedComponent(Entypo);
+const TrashIconComponent = createThemedComponent(Feather);
 
 export const HeaderButtons = ({
   leftIcon,
@@ -32,12 +32,20 @@ export const HeaderButtons = ({
     >
       {leftIcon && (
         <Button hasStyle={false} onPress={onLeftPress}>
-          <BackIconComponent sx={{ color: "$white" }} />
+          <ChevronIconComponent
+            name="chevron-thin-left"
+            size={24}
+            sx={{ color: "$white" }}
+          />
         </Button>
       )}
       {righIcon && (
         <Button hasStyle={false} onPress={onRightPress}>
-          <TrashIconComponent sx={{ color: "$white" }} />
+          <TrashIconComponent
+            name="trash-2"
+            size={24}
+            sx={{ color: "$white" }}
+          />
         </Button>
       )}
     </Flex>
