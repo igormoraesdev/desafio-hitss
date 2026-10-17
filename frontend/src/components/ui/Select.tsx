@@ -2,8 +2,8 @@ import { Feather } from "@expo/vector-icons";
 import { styled, Text } from "dripsy";
 import { ComponentProps, Fragment, useState } from "react";
 import { FlatList, ListRenderItem, Modal, Pressable } from "react-native";
+import { Button } from "./Button";
 
-const StyledPressable = styled(Pressable)();
 const IconComponent = styled(Feather)();
 const StyledOverlay = styled(Pressable)();
 const StyledModalContent = styled(Pressable)();
@@ -14,7 +14,10 @@ export type ItemProps = {
   value: string;
 };
 
-export type SelectProps = ComponentProps<typeof StyledPressable> & {
+export type SelectProps = Omit<
+  ComponentProps<typeof Pressable>,
+  "children" | "style"
+> & {
   placeholder?: string;
   placeholderModal?: string;
   selectedValue?: ItemProps;
@@ -28,7 +31,6 @@ export const Select = ({
   selectedValue,
   data,
   onSelect,
-  sx,
 }: SelectProps) => {
   const [timeSelecionado, setTimeSelecionado] = useState(selectedValue?.label);
   const [modalVisivel, setModalVisivel] = useState(false);
@@ -63,7 +65,7 @@ export const Select = ({
 
   return (
     <Fragment>
-      <StyledPressable
+      <Button
         onPress={handlePressSelect}
         sx={{
           width: "100%",
@@ -74,7 +76,6 @@ export const Select = ({
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "space-between",
-          ...sx,
         }}
       >
         <Text
@@ -93,7 +94,7 @@ export const Select = ({
             color: "$darkGrey",
           }}
         />
-      </StyledPressable>
+      </Button>
       <Modal
         visible={modalVisivel}
         animationType="fade"
