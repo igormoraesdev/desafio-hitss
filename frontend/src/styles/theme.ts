@@ -39,7 +39,7 @@ export const theme = makeTheme({
     root: "Roboto",
   },
   text: {
-    h1: { fontSize: "$4", fontWeight: "400" },
+    h1: { fontSize: "$4", fontWeight: "700" },
     h2: { fontSize: "$3", fontWeight: "400" },
     paragraph: { fontSize: "$2", fontWeight: "400" },
     paragraphBold: { fontSize: "$2", fontWeight: "700" },
@@ -47,3 +47,10 @@ export const theme = makeTheme({
     small: { fontSize: "$0", fontWeight: "400" },
   },
 });
+
+type AppTheme = typeof theme;
+
+declare module "dripsy" {
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+  interface DripsyCustomTheme extends AppTheme {}
+}
