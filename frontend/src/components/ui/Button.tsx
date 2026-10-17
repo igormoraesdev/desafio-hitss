@@ -1,6 +1,6 @@
 import { Pressable, Text } from "dripsy";
-import { ReactElement } from "react";
-import { PressableProps } from "react-native";
+import { ComponentProps, ReactElement } from "react";
+import { StyleProp, ViewStyle } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -8,14 +8,40 @@ import Animated, {
 } from "react-native-reanimated";
 import { scheduleOnUI } from "react-native-worklets";
 
-type ButtonProps = PressableProps & {
-  children?: string | ReactElement;
-  hasStyle?: boolean;
-};
-
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-export const Button = ({ children, hasStyle = true, ...rest }: ButtonProps) => {
+type ButtonProps = Omit<
+  ComponentProps<typeof Pressable>,
+  "children" | "style"
+> & {
+  children?: string | ReactElement | ReactElement[];
+  hasStyle?: boolean;
+  style?: StyleProp<ViewStyle>;
+};
+
+const baseSx = {
+  alignItems: "center",
+  justifyContent: "center",
+  width: "100%",
+  height: 56,
+  backgroundColor: "$green",
+  borderRadius: 6,
+} as const;
+
+const iconSx = {
+  height: 32,
+  width: 32,
+  alignItems: "center",
+  justifyContent: "center",
+} as const;
+
+export const Button = ({
+  children,
+  hasStyle = true,
+  sx,
+  style,
+  ...rest
+}: ButtonProps) => {
   const opacity = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => {
@@ -26,7 +52,7 @@ export const Button = ({ children, hasStyle = true, ...rest }: ButtonProps) => {
 
   const handlePressIn = () => {
     scheduleOnUI(() => {
-      opacity.value = withTiming(0.5, { duration: 100 });
+      opacity.value = withTiming(0.85, { duration: 100 });
     });
   };
 
@@ -35,29 +61,14 @@ export const Button = ({ children, hasStyle = true, ...rest }: ButtonProps) => {
       opacity.value = withTiming(1, { duration: 150 });
     });
   };
+
   return (
     <AnimatedPressable
       {...rest}
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
-      style={[animatedStyle]}
-      sx={
-        hasStyle
-          ? {
-              alignItems: "center",
-              justifyContent: "center",
-              width: "100%",
-              height: 56,
-              backgroundColor: "$green",
-              borderRadius: 6,
-            }
-          : {
-              height: 32,
-              width: 32,
-              alignItems: "center",
-              justifyContent: "center",
-            }
-      }
+      style={[animatedStyle, style]}
+      sx={{ ...(hasStyle ? baseSx : iconSx), ...sx }}
     >
       {typeof children === "string" ? (
         <Text variant="paragraphBold" sx={{ color: "$white" }}>
