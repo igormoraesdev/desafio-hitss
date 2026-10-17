@@ -1,6 +1,7 @@
 import { Container } from "@/components/layout/Container";
 import { HeaderButtons } from "@/components/layout/HeaderButtons";
 import { Button } from "@/components/ui/Button";
+import { CustomColorPicker } from "@/components/ui/CustomColorPicker";
 import { Input } from "@/components/ui/Input";
 import { ItemProps, Select } from "@/components/ui/Select";
 import { Box } from "dripsy";
@@ -16,7 +17,6 @@ export default function HomeScreen() {
     label: "Flamengo",
     value: "flamengo",
   });
-  console.log(selectedValue);
   return (
     <Container
       header={<HeaderButtons leftIcon righIcon />}
@@ -37,7 +37,7 @@ export default function HomeScreen() {
             placeholder="Selecione um time"
             placeholderModal="Selecione um time"
           />
-
+          <CustomColorPicker />
           <Button>Criar time</Button>
         </Box>
       }
