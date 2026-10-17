@@ -2,9 +2,21 @@ import { Container } from "@/components/layout/Container";
 import { HeaderButtons } from "@/components/layout/HeaderButtons";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { ItemProps, Select } from "@/components/ui/Select";
 import { Box } from "dripsy";
+import { useState } from "react";
 
 export default function HomeScreen() {
+  const times = [
+    { label: "Flamengo", value: "flamengo" },
+    { label: "Palmeiras", value: "palmeiras" },
+    { label: "São Paulo", value: "sao_paulo" },
+  ];
+  const [selectedValue, setSelectedValue] = useState<ItemProps>({
+    label: "Flamengo",
+    value: "flamengo",
+  });
+  console.log(selectedValue);
   return (
     <Container
       header={<HeaderButtons leftIcon righIcon />}
@@ -18,6 +30,14 @@ export default function HomeScreen() {
           }}
         >
           <Input placeholder={"test"} icon />
+          <Select
+            data={times}
+            selectedValue={selectedValue}
+            onSelect={(v: ItemProps) => setSelectedValue(v)}
+            placeholder="Selecione um time"
+            placeholderModal="Selecione um time"
+          />
+
           <Button>Criar time</Button>
         </Box>
       }
