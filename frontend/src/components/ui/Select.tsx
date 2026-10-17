@@ -80,7 +80,7 @@ export const Select = ({
         <Text
           variant="paragraph"
           sx={{
-            color: timeSelecionado ? "$white" : "$darkGrey",
+            color: "$darkGrey",
           }}
         >
           {timeSelecionado ? timeSelecionado : placeholder}
@@ -90,7 +90,7 @@ export const Select = ({
           name="chevron-down"
           size={18}
           sx={{
-            color: timeSelecionado ? "$white" : "$darkGrey",
+            color: "$darkGrey",
           }}
         />
       </StyledPressable>
