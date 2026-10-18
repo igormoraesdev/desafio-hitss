@@ -1,5 +1,6 @@
 import { Container } from "@/components/layout/Container";
 import { HeaderButtons } from "@/components/layout/HeaderButtons";
+import { TeamButton } from "@/components/layout/TeamButton";
 import { Button } from "@/components/ui/Button";
 import { CustomColorPicker } from "@/components/ui/CustomColorPicker";
 import { Input } from "@/components/ui/Input";
@@ -19,6 +20,8 @@ export default function HomeScreen() {
   });
   return (
     <Container
+      title="Times"
+      description="Acesse um dos times"
       header={<HeaderButtons leftIcon righIcon />}
       content={
         <Box
@@ -39,6 +42,7 @@ export default function HomeScreen() {
           />
           <CustomColorPicker />
           <Button>Criar time</Button>
+          <TeamButton name="Flamengo" color="#f21717" />
         </Box>
       }
     />
