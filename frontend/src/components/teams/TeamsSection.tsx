@@ -9,7 +9,7 @@ export const TeamsSection = () => {
   const router = useRouter();
 
   const onTeamPress = (team: Teams) => {
-    // router.push(`/teams/${String(team.id)}`);
+    router.push(`/teams/${String(team.id)}`);
   };
 
   const onCreatePress = () => {
