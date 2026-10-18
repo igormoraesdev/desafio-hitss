@@ -9,6 +9,7 @@ const ChevronIcon = createThemedComponent(Entypo);
 type TeamButonProps = {
   name: string;
   color: string;
+  onPress?: () => void;
 };
 
 const styles = {
@@ -30,9 +31,9 @@ const styles = {
   },
 } as const;
 
-export const TeamButton = ({ name, color }: TeamButonProps) => {
+export const TeamButton = ({ name, color, onPress }: TeamButonProps) => {
   return (
-    <Button sx={styles.content}>
+    <Button sx={styles.content} onPress={onPress}>
       <Flex sx={styles.row}>
         <Flex sx={{ gap: "$4", alignItems: "center" }}>
           <TeamIcon name="users" size={24} sx={{ color }} />
