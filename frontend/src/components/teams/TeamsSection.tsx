@@ -1,5 +1,5 @@
 import { Teams } from "@/models/team";
-import { useTeams } from "@/viewmodels/teams/useTeams";
+import { useTeams } from "@/viewmodels/teams/hooks/useTeams";
 import { useRouter } from "expo-router";
 import { TeamList } from "./TeamsList";
 
