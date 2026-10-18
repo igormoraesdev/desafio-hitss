@@ -10,13 +10,13 @@ import { useEffect } from "react";
 
 SplashScreen.preventAutoHideAsync();
 
+const queryClient = new QueryClient();
+
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
     Roboto_400Regular,
     Roboto_700Bold,
   });
-
-  const queryClient = new QueryClient();
 
   useEffect(() => {
     if (fontsLoaded || fontError) {
