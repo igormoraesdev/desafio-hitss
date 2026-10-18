@@ -9,6 +9,9 @@ export const theme = makeTheme({
     $grey: "#E1E1E6",
     $darkGrey: "#7C7C8A",
     $white: "#FFFFFF",
+    $red: "#980000",
+    $orange: "#986E00",
+    $lemon: "#689800",
   },
   space: {
     $0: 0,

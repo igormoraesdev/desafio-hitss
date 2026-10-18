@@ -1,5 +1,6 @@
 import { Container } from "@/components/layout/Container";
 import { HeaderButtons } from "@/components/layout/HeaderButtons";
+import { TaskButton } from "@/components/layout/TaskButton";
 import { TeamButton } from "@/components/layout/TeamButton";
 import { Button } from "@/components/ui/Button";
 import { CustomColorPicker } from "@/components/ui/CustomColorPicker";
@@ -18,6 +19,14 @@ export default function HomeScreen() {
     label: "Flamengo",
     value: "flamengo",
   });
+  const team = {
+    name: "Fluminense",
+    task: {
+      title: "Configurar ambiente local",
+      description: "Docker Compose com Postgres e variáveis de ambiente",
+      status: "COMPLETED",
+    },
+  };
   return (
     <Container
       title="Times"
@@ -43,6 +52,12 @@ export default function HomeScreen() {
           <CustomColorPicker />
           <Button>Criar time</Button>
           <TeamButton name="Flamengo" color="#f21717" />
+          <TaskButton
+            teamName={team.name}
+            status={team.task.status}
+            title={team.task.title}
+            description={team.task.description}
+          />
         </Box>
       }
     />
