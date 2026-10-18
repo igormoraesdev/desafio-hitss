@@ -1,5 +1,6 @@
 import { Container } from "@/components/layout/Container";
 import { HeaderButtons } from "@/components/layout/HeaderButtons";
+import { TeamCreateSection } from "@/components/teams/TeamCreateSection";
 
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { createThemedComponent } from "dripsy";
@@ -23,7 +24,7 @@ export default function NewTeamScreen() {
           sx={{ color: "$green" }}
         />
       }
-      content={<></>}
+      content={<TeamCreateSection />}
     />
   );
 }
