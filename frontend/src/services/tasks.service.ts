@@ -1,36 +1,40 @@
-import { ApiResponse } from "@/models/api";
-import { Teams } from "@/models/team";
+import { ApiResponse, FilterParams } from "@/models/api";
+import { Tasks, TaskStatusKey } from "@/models/task";
 import { httpClient } from "./api";
 
-type TeamsParams = {
-  name: string;
-  color: string;
+type TasksParams = {
+  title: string;
+  description?: string;
+  status?: TaskStatusKey;
+  teamIds?: number[];
 };
 
-export const createTeams = async (params: TeamsParams) => {
-  const response = await httpClient.post<ApiResponse<Teams>>(
-    "/v1/teams",
+export const createTasks = async (params: TasksParams) => {
+  const response = await httpClient.post<ApiResponse<Tasks>>(
+    "/v1/tasks",
     params,
   );
 
   return response.data;
 };
 
-export const findAllTeams = async () => {
-  const response = await httpClient.get<ApiResponse<Teams[]>>("/v1/teams");
+export const findAllTasks = async (params: FilterParams) => {
+  const response = await httpClient.get<ApiResponse<Tasks[]>>("/v1/tasks", {
+    params,
+  });
 
   return response.data;
 };
 
-export const findTeamById = async (id: number) => {
-  const response = await httpClient.get<ApiResponse<Teams>>(`/v1/teams/${id}`);
+export const findTaskById = async (id: number) => {
+  const response = await httpClient.get<ApiResponse<Tasks>>(`/v1/tasks/${id}`);
 
   return response.data;
 };
 
-export const deleteTeam = async (id: number) => {
+export const deleteTask = async (id: number) => {
   const response = await httpClient.delete<ApiResponse<void>>(
-    `/v1/teams/${id}`,
+    `/v1/tasks/${id}`,
   );
 
   return response.data;
