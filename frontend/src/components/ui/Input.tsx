@@ -20,6 +20,7 @@ export const Input = forwardRef<RNTextInput, InputProps>(
           gap: "$2",
           width: "100%",
           backgroundColor: "$bgTerciary",
+          borderRadius: 6,
         }}
       >
         <StyledTextInput
