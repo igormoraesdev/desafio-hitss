@@ -22,7 +22,7 @@ export const findAllTeams = async () => {
   return response.data;
 };
 
-export const findTeamById = async (id: string) => {
+export const findTeamById = async (id: number) => {
   const response = await httpClient.get<ApiResponse<Teams>>(`/v1/teams/${id}`);
 
   return response.data;
