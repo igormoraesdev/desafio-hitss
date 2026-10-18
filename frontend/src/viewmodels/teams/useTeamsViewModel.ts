@@ -5,6 +5,7 @@ import {
   updateTeam,
 } from "@/services/team.service";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import { teamsKeys } from "./constants/teams";
 
 type UpdateTeamVariables = {
@@ -15,6 +16,7 @@ type UpdateTeamVariables = {
 
 export const useTeamsViewModel = () => {
   const queryClient = useQueryClient();
+  const [search, setSearch] = useState("");
 
   const invalidateTeams = (id?: number) => {
     queryClient.invalidateQueries({ queryKey: teamsKeys.all });
@@ -45,8 +47,13 @@ export const useTeamsViewModel = () => {
     onSuccess: (_, id) => invalidateTeams(id),
   });
 
+  const teams = teamsQuery.data ?? [];
+  const filteredTeams = teams.filter((team) =>
+    team.name.toLowerCase().includes(search.trim().toLowerCase()),
+  );
+
   return {
-    teams: teamsQuery.data ?? [],
+    teams: filteredTeams ?? [],
     isLoading: teamsQuery.isPending,
     error: teamsQuery.error,
     refetch: teamsQuery.refetch,
@@ -56,5 +63,7 @@ export const useTeamsViewModel = () => {
     isUpdating: updateMutation.isPending,
     removeTeam: deleteMutation.mutateAsync,
     isRemoving: deleteMutation.isPending,
+    search,
+    setSearch,
   };
 };
