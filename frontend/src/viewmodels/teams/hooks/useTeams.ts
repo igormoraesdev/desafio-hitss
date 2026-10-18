@@ -1,4 +1,8 @@
-import { createTeams, deleteTeam, findAllTeams } from "@/services/team.service";
+import {
+  createTeams,
+  deleteTeam,
+  findAllTeams,
+} from "@/services/teams.service";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { teamsKeys } from "../constants/teams";

@@ -1,4 +1,4 @@
-import { findTeamById } from "@/services/team.service";
+import { findTeamById } from "@/services/teams.service";
 import { useQuery } from "@tanstack/react-query";
 import { teamsKeys } from "../constants/teams";
 
