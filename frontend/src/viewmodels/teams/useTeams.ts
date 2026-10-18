@@ -14,7 +14,7 @@ type UpdateTeamVariables = {
   color: string;
 };
 
-export const useTeamsViewModel = () => {
+export const useTeams = () => {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
 

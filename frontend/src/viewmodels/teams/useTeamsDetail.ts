@@ -2,7 +2,7 @@ import { findTeamById } from "@/services/team.service";
 import { useQuery } from "@tanstack/react-query";
 import { teamsKeys } from "./constants/teams";
 
-export const useTeamsDetailViewModel = (id?: number) => {
+export const useTeamsDetail = (id?: number) => {
   const teamQuery = useQuery({
     queryKey: teamsKeys.detail(id ?? 0),
     queryFn: () => findTeamById(id!),

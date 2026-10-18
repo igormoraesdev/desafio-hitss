@@ -1,10 +1,10 @@
 import { Teams } from "@/models/team";
-import { useTeamsViewModel } from "@/viewmodels/teams/useTeamsViewModel";
+import { useTeams } from "@/viewmodels/teams/useTeams";
 import { useRouter } from "expo-router";
 import { TeamList } from "./TeamsList";
 
 export const TeamsSection = () => {
-  const { teams, search, isLoading, setSearch, refetch } = useTeamsViewModel();
+  const { teams, search, isLoading, setSearch, refetch } = useTeams();
 
   const router = useRouter();
 
