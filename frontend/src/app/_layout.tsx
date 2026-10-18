@@ -1,6 +1,7 @@
 import { theme } from "@/styles/theme";
 import { Roboto_400Regular } from "@expo-google-fonts/roboto/400Regular";
 import { Roboto_700Bold } from "@expo-google-fonts/roboto/700Bold";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { DripsyProvider } from "dripsy";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
@@ -15,6 +16,8 @@ export default function RootLayout() {
     Roboto_700Bold,
   });
 
+  const queryClient = new QueryClient();
+
   useEffect(() => {
     if (fontsLoaded || fontError) {
       SplashScreen.hideAsync();
@@ -26,8 +29,10 @@ export default function RootLayout() {
   }
 
   return (
-    <DripsyProvider theme={theme}>
-      <Stack screenOptions={{ headerShown: false }} />
-    </DripsyProvider>
+    <QueryClientProvider client={queryClient}>
+      <DripsyProvider theme={theme}>
+        <Stack screenOptions={{ headerShown: false }} />
+      </DripsyProvider>
+    </QueryClientProvider>
   );
 }
