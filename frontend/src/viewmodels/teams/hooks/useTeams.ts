@@ -1,18 +1,7 @@
-import {
-  createTeams,
-  deleteTeam,
-  findAllTeams,
-  updateTeam,
-} from "@/services/team.service";
+import { createTeams, deleteTeam, findAllTeams } from "@/services/team.service";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { teamsKeys } from "../constants/teams";
-
-type UpdateTeamVariables = {
-  id: number;
-  name: string;
-  color: string;
-};
 
 export const useTeams = () => {
   const queryClient = useQueryClient();
@@ -36,12 +25,6 @@ export const useTeams = () => {
     onSuccess: () => invalidateTeams(),
   });
 
-  const updateMutation = useMutation({
-    mutationFn: ({ id, ...params }: UpdateTeamVariables) =>
-      updateTeam(params, id),
-    onSuccess: (_, { id }) => invalidateTeams(id),
-  });
-
   const deleteMutation = useMutation({
     mutationFn: deleteTeam,
     onSuccess: (_, id) => invalidateTeams(id),
@@ -59,8 +42,6 @@ export const useTeams = () => {
     refetch: teamsQuery.refetch,
     createTeam: createMutation.mutateAsync,
     isCreating: createMutation.isPending,
-    updateTeam: updateMutation.mutateAsync,
-    isUpdating: updateMutation.isPending,
     removeTeam: deleteMutation.mutateAsync,
     isRemoving: deleteMutation.isPending,
     search,

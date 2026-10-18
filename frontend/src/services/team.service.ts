@@ -28,15 +28,6 @@ export const findTeamById = async (id: number) => {
   return response.data;
 };
 
-export const updateTeam = async (params: TeamsParams, id: number) => {
-  const response = await httpClient.patch<ApiResponse<void>>(
-    `/v1/teams/${id}`,
-    params,
-  );
-
-  return response.data;
-};
-
 export const deleteTeam = async (id: number) => {
   const response = await httpClient.delete<ApiResponse<void>>(
     `/v1/teams/${id}`,
