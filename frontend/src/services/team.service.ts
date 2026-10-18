@@ -19,13 +19,13 @@ export const createTeams = async (params: TeamsParams) => {
 export const findAllTeams = async () => {
   const response = await httpClient.get<ApiResponse<Teams[]>>("/v1/teams");
 
-  return response;
+  return response.data;
 };
 
 export const findTeamById = async (id: string) => {
   const response = await httpClient.get<ApiResponse<Teams>>(`/v1/teams/${id}`);
 
-  return response;
+  return response.data;
 };
 
 export const updateTeam = async (params: TeamsParams, id: number) => {
