@@ -13,7 +13,7 @@ export const TeamsSection = () => {
   };
 
   const onCreatePress = () => {
-    // router.push("/teams/new");
+    router.push("/teams/new");
   };
 
   return (

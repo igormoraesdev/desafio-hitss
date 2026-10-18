@@ -7,6 +7,7 @@ type ContainerProps = {
   spaceTitleContent?: number;
   title: string;
   description: string;
+  titleIcon?: ReactElement;
 };
 
 export const Container = ({
@@ -15,6 +16,7 @@ export const Container = ({
   spaceTitleContent,
   title,
   description,
+  titleIcon,
 }: ContainerProps) => {
   return (
     <SafeAreaView
@@ -28,6 +30,7 @@ export const Container = ({
         {header}
         <Box sx={{ flex: 1, marginTop: spaceTitleContent ?? "$6" }}>
           <Box sx={{ gap: "$2", alignItems: "center" }}>
+            {titleIcon}
             <Text variant="h1" sx={{ color: "$white" }}>
               {title}
             </Text>
