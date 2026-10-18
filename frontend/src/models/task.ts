@@ -1,9 +1,9 @@
 import { Teams } from "./team";
 
 export enum TaskStatus {
-  PENDING,
-  IN_PROGRESS,
-  COMPLETED,
+  PENDING = "PENDING",
+  IN_PROGRESS = "IN_PROGRESS",
+  COMPLETED = "COMPLETED",
 }
 
 export type TaskStatusKey = keyof typeof TaskStatus;
