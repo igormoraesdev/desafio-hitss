@@ -14,8 +14,8 @@ type TeamButonProps = {
 
 const styles = {
   content: {
-    maxHeight: 96,
-    flex: 1,
+    height: 96,
+    width: "100%",
     borderRadius: 6,
     paddingVertical: "$5",
     paddingHorizontal: "$4",
