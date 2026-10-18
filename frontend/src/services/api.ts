@@ -1,9 +1,8 @@
 import { create as axiosCreate } from "axios";
-import { Platform } from "react-native";
+import Constants from "expo-constants";
 
-export const baseURL = Platform.select({
-  ios: "http://localhost:3000",
-  android: "http://10.0.2.2:3000",
-});
+const host = Constants.expoConfig?.hostUri?.split(":")[0] ?? "localhost";
+
+export const baseURL = `http://${host}:3000`;
 
 export const httpClient = axiosCreate({ baseURL });
