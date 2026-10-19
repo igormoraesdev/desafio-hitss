@@ -32,22 +32,22 @@ export const Select = ({
   data,
   onSelect,
 }: SelectProps) => {
-  const [timeSelecionado, setTimeSelecionado] = useState(selectedValue?.label);
-  const [modalVisivel, setModalVisivel] = useState(false);
+  const [selectedTeam, setSelectedTeam] = useState(selectedValue?.label);
+  const [showModal, setShowModal] = useState(false);
 
   const handlePressSelect = () => {
-    setModalVisivel(true);
+    setShowModal(true);
   };
 
-  const selecionarTime = (item: ItemProps) => {
-    setTimeSelecionado(item.label);
-    setModalVisivel(false);
+  const handleSelectTeam = (item: ItemProps) => {
+    setSelectedTeam(item.label);
+    setShowModal(false);
     onSelect?.(item);
   };
 
   const renderItem: ListRenderItem<ItemProps> = ({ item }) => (
     <StyledOptionRow
-      onPress={() => selecionarTime(item)}
+      onPress={() => handleSelectTeam(item)}
       sx={{
         paddingVertical: "$3",
         borderBottomWidth: 1,
@@ -84,7 +84,7 @@ export const Select = ({
             color: "$darkGrey",
           }}
         >
-          {timeSelecionado ? timeSelecionado : placeholder}
+          {selectedTeam ? selectedTeam : placeholder}
         </Text>
 
         <IconComponent
@@ -96,13 +96,13 @@ export const Select = ({
         />
       </Button>
       <Modal
-        visible={modalVisivel}
+        visible={showModal}
         animationType="fade"
         transparent={true}
-        onRequestClose={() => setModalVisivel(false)}
+        onRequestClose={() => setShowModal(false)}
       >
         <StyledOverlay
-          onPress={() => setModalVisivel(false)}
+          onPress={() => setShowModal(false)}
           sx={{
             flex: 1,
             backgroundColor: "rgba(0, 0, 0, 0.6)",
