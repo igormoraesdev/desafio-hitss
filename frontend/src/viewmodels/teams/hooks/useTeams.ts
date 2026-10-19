@@ -1,23 +1,21 @@
-import { PaginationParams } from "@/models/api";
 import {
   createTeams,
   deleteTeam,
   findAllTeams,
 } from "@/services/teams.service";
 import {
-  keepPreviousData,
+  useInfiniteQuery,
   useMutation,
-  useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
 import { useState } from "react";
 import { teamsKeys } from "../constants/teams";
 
-export const useTeams = (initialPagination: PaginationParams = {}) => {
+const PAGE_SIZE = 10;
+
+export const useTeams = (limit = PAGE_SIZE) => {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
-  const [pagination, setPagination] =
-    useState<PaginationParams>(initialPagination);
 
   const invalidateTeams = (id?: number) => {
     queryClient.invalidateQueries({ queryKey: teamsKeys.all });
@@ -26,10 +24,15 @@ export const useTeams = (initialPagination: PaginationParams = {}) => {
     }
   };
 
-  const teamsQuery = useQuery({
-    queryKey: teamsKeys.list(pagination),
-    queryFn: () => findAllTeams(pagination),
-    placeholderData: keepPreviousData,
+  const teamsQuery = useInfiniteQuery({
+    queryKey: teamsKeys.list({ limit }),
+    queryFn: ({ pageParam }) => findAllTeams({ page: pageParam, limit }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => {
+      const meta = lastPage.meta;
+      if (!meta || meta.page >= meta.totalPages) return undefined;
+      return meta.page + 1;
+    },
   });
 
   const createMutation = useMutation({
@@ -42,29 +45,32 @@ export const useTeams = (initialPagination: PaginationParams = {}) => {
     onSuccess: (_, id) => invalidateTeams(id),
   });
 
-  const teams = teamsQuery.data?.data ?? [];
+  const teams = teamsQuery.data?.pages.flatMap((page) => page.data) ?? [];
   const filteredTeams = teams.filter((team) =>
     team.name.toLowerCase().includes(search.trim().toLowerCase()),
   );
 
-  const updatePagination = (next: Partial<PaginationParams>) => {
-    setPagination((current) => ({ ...current, ...next }));
+  const loadMore = () => {
+    if (teamsQuery.hasNextPage && !teamsQuery.isFetchingNextPage) {
+      teamsQuery.fetchNextPage();
+    }
   };
 
   return {
     teams: filteredTeams,
-    meta: teamsQuery.data?.meta,
+    total: teamsQuery.data?.pages.at(-1)?.meta?.total ?? 0,
     isLoading: teamsQuery.isPending,
     isFetching: teamsQuery.isFetching,
+    isLoadingMore: teamsQuery.isFetchingNextPage,
+    hasMore: teamsQuery.hasNextPage,
     error: teamsQuery.error,
     refetch: teamsQuery.refetch,
+    loadMore,
     createTeam: createMutation.mutateAsync,
     isCreating: createMutation.isPending,
     removeTeam: deleteMutation.mutateAsync,
     isRemoving: deleteMutation.isPending,
     search,
     setSearch,
-    pagination,
-    setPagination: updatePagination,
   };
 };
