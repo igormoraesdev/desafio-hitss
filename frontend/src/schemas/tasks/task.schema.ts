@@ -5,7 +5,7 @@ const TASK_STATUS_KEYS = Object.keys(TaskStatus) as [TaskStatusKey];
 
 export const createTaskSchema = z.object({
   title: z
-    .string()
+    .string("Informe o título da tarefa")
     .trim()
     .min(1, "Informe o título da tarefa")
     .max(100, "O título pode ter no máximo 100 caracteres"),
@@ -14,10 +14,8 @@ export const createTaskSchema = z.object({
     .trim()
     .max(500, "A descrição pode ter no máximo 500 caracteres")
     .optional(),
-  status: z.enum(TASK_STATUS_KEYS).default("PENDING"),
-  teamIds: z
-    .array(z.number().int().positive())
-    .min(1, "Selecione ao menos um time"),
+  status: z.enum(TASK_STATUS_KEYS, "Escolha um status"),
+  teamIds: z.array(z.number().int().positive()).optional(),
 });
 
 export type CreateTaskFormInput = z.input<typeof createTaskSchema>;
