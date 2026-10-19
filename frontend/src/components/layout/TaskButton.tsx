@@ -13,7 +13,7 @@ const MenuIcon = createThemedComponent(Feather);
 type TaskButtonProps = {
   teamName: string;
   title: string;
-  description: string;
+  description?: string | null;
   status: TaskStatusKey;
   isUpdating?: boolean;
   onPress?: () => void;
@@ -107,7 +107,7 @@ export const TaskButton = ({
           </Flex>
         </Flex>
         <Text variant="span" sx={{ color: "$white" }}>
-          {description}
+          {description ?? ""}
         </Text>
       </Button>
 
