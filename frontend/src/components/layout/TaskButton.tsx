@@ -8,11 +8,12 @@ type TaskButtonProps = {
   title: string;
   description: string;
   status: string;
+  onPress?: () => void;
 };
 
 const styles = {
   content: {
-    maxHeight: 144,
+    minHeight: 144,
     flex: 1,
     borderRadius: 8,
     padding: "$3",
@@ -40,6 +41,7 @@ export const TaskButton = ({
   teamName,
   description,
   status,
+  onPress,
 }: TaskButtonProps) => {
   const statusFormat = useMemo(() => {
     const statusKeys = {
@@ -60,7 +62,7 @@ export const TaskButton = ({
   }, [status]);
 
   return (
-    <Button sx={styles.content}>
+    <Button sx={styles.content} onPress={onPress}>
       <Flex sx={styles.row}>
         <Box sx={{ gap: "$2" }}>
           <Text variant="paragraphBold" sx={{ color: "$white" }}>
