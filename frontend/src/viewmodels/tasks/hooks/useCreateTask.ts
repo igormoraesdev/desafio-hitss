@@ -3,7 +3,7 @@ import {
   CreateTaskFormInput,
   CreateTaskFormSchema,
   createTaskSchema,
-} from "@/schemas/tasks/task.schema";
+} from "@/schemas/task.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { useForm } from "react-hook-form";

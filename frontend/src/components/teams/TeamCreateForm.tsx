@@ -1,4 +1,4 @@
-import { CreateTeamFormSchema } from "@/schemas/teams/team.schema";
+import { CreateTeamFormSchema } from "@/schemas/team.schema";
 import { Box, Text } from "dripsy";
 import { Control, Controller, FieldErrors } from "react-hook-form";
 import { Button } from "../ui/Button";

@@ -1,8 +1,5 @@
 import { Teams } from "@/models/team";
-import {
-  CreateTeamFormSchema,
-  createTeamSchema,
-} from "@/schemas/teams/team.schema";
+import { CreateTeamFormSchema, createTeamSchema } from "@/schemas/team.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { useForm } from "react-hook-form";
