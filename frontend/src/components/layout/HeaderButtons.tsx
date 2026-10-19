@@ -6,7 +6,7 @@ import { Button } from "../ui/Button";
 
 type HeaderButtonsProps = {
   leftIcon?: boolean;
-  righIcon?: boolean;
+  rightIcon?: boolean;
   onLeftPress?: (event: GestureResponderEvent) => void;
   onRightPress?: (event: GestureResponderEvent) => void;
 };
@@ -16,7 +16,7 @@ const TrashIconComponent = createThemedComponent(Feather);
 
 export const HeaderButtons = ({
   leftIcon,
-  righIcon,
+  rightIcon,
   onLeftPress,
   onRightPress,
 }: HeaderButtonsProps) => {
@@ -39,7 +39,7 @@ export const HeaderButtons = ({
           />
         </Button>
       )}
-      {righIcon && (
+      {rightIcon && (
         <Button hasStyle={false} onPress={onRightPress}>
           <TrashIconComponent
             name="trash-2"
