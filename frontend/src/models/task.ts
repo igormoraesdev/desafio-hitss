@@ -9,6 +9,7 @@ export enum TaskStatus {
 export type TaskStatusKey = keyof typeof TaskStatus;
 
 export type Tasks = {
+  id: number;
   title: string;
   description: string;
   status: TaskStatusKey;

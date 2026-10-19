@@ -6,19 +6,24 @@ import {
 } from "@/services/tasks.service";
 import {
   keepPreviousData,
+  useInfiniteQuery,
   useMutation,
-  useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
 import { useState } from "react";
 import { tasksKeys } from "../constants/tasks";
 
-type TaskFilters = Omit<FilterParams, "search">;
+const PAGE_SIZE = 10;
+
+type TaskFilters = Omit<FilterParams, "search" | "page">;
 
 export const useTasks = (initialFilters: TaskFilters = {}) => {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
-  const [filters, setFilters] = useState<TaskFilters>(initialFilters);
+  const [filters, setFilters] = useState<TaskFilters>({
+    limit: PAGE_SIZE,
+    ...initialFilters,
+  });
 
   const params: FilterParams = {
     ...filters,
@@ -32,9 +37,15 @@ export const useTasks = (initialFilters: TaskFilters = {}) => {
     }
   };
 
-  const tasksQuery = useQuery({
+  const tasksQuery = useInfiniteQuery({
     queryKey: tasksKeys.list(params),
-    queryFn: () => findAllTasks(params),
+    queryFn: ({ pageParam }) => findAllTasks({ ...params, page: pageParam }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => {
+      const meta = lastPage.meta;
+      if (!meta || meta.page >= meta.totalPages) return undefined;
+      return meta.page + 1;
+    },
     placeholderData: keepPreviousData,
   });
 
@@ -52,13 +63,22 @@ export const useTasks = (initialFilters: TaskFilters = {}) => {
     setFilters((current) => ({ ...current, ...next }));
   };
 
+  const loadMore = () => {
+    if (tasksQuery.hasNextPage && !tasksQuery.isFetchingNextPage) {
+      tasksQuery.fetchNextPage();
+    }
+  };
+
   return {
-    tasks: tasksQuery.data?.data ?? [],
-    meta: tasksQuery.data?.meta,
+    tasks: tasksQuery.data?.pages.flatMap((page) => page.data) ?? [],
+    total: tasksQuery.data?.pages.at(-1)?.meta?.total ?? 0,
     isLoading: tasksQuery.isPending,
     isFetching: tasksQuery.isFetching,
+    isLoadingMore: tasksQuery.isFetchingNextPage,
+    hasMore: tasksQuery.hasNextPage,
     error: tasksQuery.error,
     refetch: tasksQuery.refetch,
+    loadMore,
     createTask: createMutation.mutateAsync,
     isCreating: createMutation.isPending,
     removeTask: deleteMutation.mutateAsync,
