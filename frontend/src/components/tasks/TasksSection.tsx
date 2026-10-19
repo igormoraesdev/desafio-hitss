@@ -1,0 +1,49 @@
+import { Tasks } from "@/models/task";
+import { useTasks } from "@/viewmodels/tasks/hooks/useTasks";
+import { useTeamsDetail } from "@/viewmodels/teams/hooks/useTeamsDetail";
+import { TasksList } from "./TasksList";
+
+type TasksSectionProps = {
+  teamId: number;
+};
+
+export const TasksSection = ({ teamId }: TasksSectionProps) => {
+  const { team } = useTeamsDetail(teamId);
+  const {
+    tasks,
+    search,
+    isLoading,
+    isLoadingMore,
+    setSearch,
+    refetch,
+    loadMore,
+  } = useTasks({ teamId });
+
+  const onTaskPress = (task: Tasks) => {
+    // TODO: navegar para o detalhe da tarefa quando a rota existir
+    console.log("task", task.id);
+  };
+
+  const onCreatePress = () => {
+    // TODO: navegar para a criação de tarefa quando a rota existir
+  };
+
+  if (!team) {
+    return null;
+  }
+
+  return (
+    <TasksList
+      team={team}
+      tasks={tasks}
+      search={search}
+      isLoading={isLoading}
+      isLoadingMore={isLoadingMore}
+      refetch={refetch}
+      onEndReached={loadMore}
+      onSearchChange={setSearch}
+      onTaskPress={onTaskPress}
+      onCreatePress={onCreatePress}
+    />
+  );
+};
