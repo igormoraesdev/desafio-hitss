@@ -1,4 +1,4 @@
-import { Tasks } from "@/models/task";
+import { Tasks, TaskStatusKey } from "@/models/task";
 import { Teams } from "@/models/team";
 import { ActivityIndicator, Box, styled, Sx } from "dripsy";
 import { useState } from "react";
@@ -25,6 +25,8 @@ type TasksListProps = {
   onSearchChange: (text: string) => void;
   onFiltersChange: (filters: TaskFilterValues) => void;
   onTaskPress: (task: Tasks) => void;
+  onChangeStatus?: (task: Tasks, status: TaskStatusKey) => void;
+  updatingTaskId?: number;
   onCreatePress?: () => void;
 };
 
@@ -58,6 +60,8 @@ export const TasksList = ({
   onSearchChange,
   onFiltersChange,
   onTaskPress,
+  onChangeStatus,
+  updatingTaskId,
   onCreatePress,
 }: TasksListProps) => {
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -97,7 +101,13 @@ export const TasksList = ({
               description={item.description}
               teamName={team.name}
               status={item.status}
+              isUpdating={updatingTaskId === item.id}
               onPress={() => onTaskPress(item)}
+              onChangeStatus={
+                onChangeStatus
+                  ? (status) => onChangeStatus(item, status)
+                  : undefined
+              }
             />
           )}
           ListEmptyComponent={<EmptyState isTeam={false} search={search} />}

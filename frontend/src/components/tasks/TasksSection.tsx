@@ -1,4 +1,4 @@
-import { Tasks } from "@/models/task";
+import { Tasks, TaskStatusKey } from "@/models/task";
 import { useTasks } from "@/viewmodels/tasks/hooks/useTasks";
 import { useTeamsDetail } from "@/viewmodels/teams/hooks/useTeamsDetail";
 import { TaskFilterValues } from "./TasksFilters";
@@ -20,7 +20,17 @@ export const TasksSection = ({ teamId }: TasksSectionProps) => {
     setFilters,
     refetch,
     loadMore,
+    updateStatus,
+    updatingTaskId,
   } = useTasks({ teamId });
+
+  const onChangeStatus = async (task: Tasks, status: TaskStatusKey) => {
+    try {
+      await updateStatus({ id: task.id, status });
+    } catch (error) {
+      console.warn("Falha ao atualizar o status da tarefa", error);
+    }
+  };
 
   const onFiltersChange = (next: TaskFilterValues) => {
     setFilters(next);
@@ -56,6 +66,8 @@ export const TasksSection = ({ teamId }: TasksSectionProps) => {
       onSearchChange={setSearch}
       onFiltersChange={onFiltersChange}
       onTaskPress={onTaskPress}
+      onChangeStatus={onChangeStatus}
+      updatingTaskId={updatingTaskId}
       onCreatePress={onCreatePress}
     />
   );
