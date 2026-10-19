@@ -26,6 +26,7 @@ const styles = {
 export const EmptyState = ({ search, isTeam = true }: EmptyStateProps) => {
   const hasSearch = search.trim().length > 0;
 
+  const title = isTeam ? "Nenhum time encontrado" : "Nehuma tarefa encontrada";
   const textNotFound = `Não há ${isTeam ? "times" : "tarefas"} com "${search.trim()}".`;
   const textFirstItem = isTeam
     ? "Crie o primeiro time para começar."
@@ -34,7 +35,7 @@ export const EmptyState = ({ search, isTeam = true }: EmptyStateProps) => {
   return (
     <Box sx={styles.empty}>
       <Text variant="h2" sx={styles.emptyTitle}>
-        Nenhum time encontrado
+        {title}
       </Text>
       <Text variant="paragraph" sx={styles.emptyDescription}>
         {hasSearch ? textNotFound : textFirstItem}
