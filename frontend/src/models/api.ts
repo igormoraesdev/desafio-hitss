@@ -16,9 +16,12 @@ type Order = "asc" | "desc";
 
 type Status = "PENDING" | "IN_PROGRESS" | "COMPLETED";
 
-export type FilterParams = {
+export type PaginationParams = {
   page?: number;
   limit?: number;
+};
+
+export type FilterParams = PaginationParams & {
   teamId?: number;
   status?: Status;
   search?: string;

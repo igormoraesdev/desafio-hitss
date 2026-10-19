@@ -1,15 +1,23 @@
+import { PaginationParams } from "@/models/api";
 import {
   createTeams,
   deleteTeam,
   findAllTeams,
 } from "@/services/teams.service";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { useState } from "react";
 import { teamsKeys } from "../constants/teams";
 
-export const useTeams = () => {
+export const useTeams = (initialPagination: PaginationParams = {}) => {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
+  const [pagination, setPagination] =
+    useState<PaginationParams>(initialPagination);
 
   const invalidateTeams = (id?: number) => {
     queryClient.invalidateQueries({ queryKey: teamsKeys.all });
@@ -19,9 +27,9 @@ export const useTeams = () => {
   };
 
   const teamsQuery = useQuery({
-    queryKey: teamsKeys.all,
-    queryFn: findAllTeams,
-    select: (response) => response.data,
+    queryKey: teamsKeys.list(pagination),
+    queryFn: () => findAllTeams(pagination),
+    placeholderData: keepPreviousData,
   });
 
   const createMutation = useMutation({
@@ -34,14 +42,20 @@ export const useTeams = () => {
     onSuccess: (_, id) => invalidateTeams(id),
   });
 
-  const teams = teamsQuery.data ?? [];
+  const teams = teamsQuery.data?.data ?? [];
   const filteredTeams = teams.filter((team) =>
     team.name.toLowerCase().includes(search.trim().toLowerCase()),
   );
 
+  const updatePagination = (next: Partial<PaginationParams>) => {
+    setPagination((current) => ({ ...current, ...next }));
+  };
+
   return {
-    teams: filteredTeams ?? [],
+    teams: filteredTeams,
+    meta: teamsQuery.data?.meta,
     isLoading: teamsQuery.isPending,
+    isFetching: teamsQuery.isFetching,
     error: teamsQuery.error,
     refetch: teamsQuery.refetch,
     createTeam: createMutation.mutateAsync,
@@ -50,5 +64,7 @@ export const useTeams = () => {
     isRemoving: deleteMutation.isPending,
     search,
     setSearch,
+    pagination,
+    setPagination: updatePagination,
   };
 };

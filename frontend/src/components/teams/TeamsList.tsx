@@ -1,5 +1,4 @@
 import { Teams } from "@/models/team";
-import { QueryObserverResult, RefetchOptions } from "@tanstack/react-query";
 import { Box, styled, Sx, Text } from "dripsy";
 import { useState } from "react";
 import { FlatList, FlatListProps } from "react-native";
@@ -16,9 +15,7 @@ type TeamListProps = {
   teams: Teams[];
   search: string;
   isLoading: boolean;
-  refetch?: (
-    options?: RefetchOptions | undefined,
-  ) => Promise<QueryObserverResult<Teams[], Error>>;
+  refetch?: () => Promise<unknown>;
   onSearchChange: (text: string) => void;
   onTeamPress: (team: Teams) => void;
   onCreatePress?: () => void;
