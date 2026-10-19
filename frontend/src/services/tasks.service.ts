@@ -32,6 +32,15 @@ export const findTaskById = async (id: number) => {
   return response.data;
 };
 
+export const updateTask = async (id: number, params: Partial<TasksParams>) => {
+  const response = await httpClient.patch<ApiResponse<Tasks>>(
+    `/v1/tasks/${id}`,
+    params,
+  );
+
+  return response.data;
+};
+
 export const deleteTask = async (id: number) => {
   const response = await httpClient.delete<ApiResponse<void>>(
     `/v1/tasks/${id}`,
