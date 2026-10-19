@@ -1,12 +1,6 @@
 import { ApiResponse, FilterParams } from "@/models/api";
 import { Tasks, TaskStatusKey } from "@/models/task";
-import {
-  createTasks,
-  deleteTask,
-  findAllTasks,
-  TasksParams,
-  updateTask,
-} from "@/services/tasks.service";
+import { deleteTask, findAllTasks, updateTask } from "@/services/tasks.service";
 import {
   InfiniteData,
   keepPreviousData,
@@ -25,8 +19,6 @@ type TaskFilters = Omit<FilterParams, "search" | "page">;
 type TasksPages = InfiniteData<ApiResponse<Tasks[]>>;
 
 type UpdateStatusVariables = { id: number; status: TaskStatusKey };
-
-type EditTaskVariables = { id: number; params: Partial<TasksParams> };
 
 const patchTaskStatus = (
   pages: TasksPages | undefined,
@@ -87,11 +79,6 @@ export const useTasks = (initialFilters: TaskFilters = {}) => {
     placeholderData: keepPreviousData,
   });
 
-  const createMutation = useMutation({
-    mutationFn: createTasks,
-    onSuccess: () => invalidateTasks(),
-  });
-
   const updateStatusMutation = useMutation({
     mutationFn: ({ id, status }: UpdateStatusVariables) =>
       updateTask(id, { status }),
@@ -112,11 +99,6 @@ export const useTasks = (initialFilters: TaskFilters = {}) => {
       });
     },
     onSettled: (_, __, { id }) => invalidateTasks(id),
-  });
-
-  const editMutation = useMutation({
-    mutationFn: ({ id, params }: EditTaskVariables) => updateTask(id, params),
-    onSuccess: (_, { id }) => invalidateTasks(id),
   });
 
   const deleteMutation = useMutation({
@@ -144,14 +126,10 @@ export const useTasks = (initialFilters: TaskFilters = {}) => {
     error: tasksQuery.error,
     refetch: tasksQuery.refetch,
     loadMore,
-    createTask: createMutation.mutateAsync,
-    isCreating: createMutation.isPending,
     updateStatus: updateStatusMutation.mutateAsync,
     updatingTaskId: updateStatusMutation.isPending
       ? updateStatusMutation.variables.id
       : undefined,
-    editTask: editMutation.mutateAsync,
-    isEditing: editMutation.isPending,
     removeTask: deleteMutation.mutateAsync,
     isRemoving: deleteMutation.isPending,
     search,
