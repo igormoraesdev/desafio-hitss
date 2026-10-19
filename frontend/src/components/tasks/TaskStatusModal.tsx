@@ -1,4 +1,5 @@
 import { TaskStatusKey } from "@/models/task";
+import { theme } from "@/styles/theme";
 import Feather from "@expo/vector-icons/Feather";
 import { Box, createThemedComponent, styled, Text } from "dripsy";
 import { Modal, Pressable } from "react-native";
@@ -14,7 +15,8 @@ const StyledOption = styled(Pressable)();
 
 type TaskStatusModalProps = {
   visible: boolean;
-  status: TaskStatusKey;
+  status?: TaskStatusKey;
+  title?: string;
   onClose: () => void;
   onSelect: (status: TaskStatusKey) => void;
 };
@@ -55,6 +57,7 @@ const styles = {
 export const TaskStatusModal = ({
   visible,
   status,
+  title = "Alterar status",
   onClose,
   onSelect,
 }: TaskStatusModalProps) => {
@@ -68,7 +71,7 @@ export const TaskStatusModal = ({
       <StyledOverlay onPress={onClose} sx={styles.overlay}>
         <StyledMenu onPress={(e) => e.stopPropagation()} sx={styles.menu}>
           <Text variant="h2" sx={{ color: "$white", marginBottom: "$2" }}>
-            Alterar status
+            {title}
           </Text>
           {TASK_STATUS_OPTIONS.map((option) => {
             const format = TASK_STATUS_FORMAT[option];
@@ -79,7 +82,9 @@ export const TaskStatusModal = ({
                 onPress={() => onSelect(option)}
                 sx={styles.option}
                 style={({ pressed }) => ({
-                  backgroundColor: pressed ? "#29292E" : "transparent",
+                  backgroundColor: pressed
+                    ? theme.colors.$bgSecondary
+                    : "transparent",
                 })}
               >
                 <Box sx={styles.optionLeft}>
