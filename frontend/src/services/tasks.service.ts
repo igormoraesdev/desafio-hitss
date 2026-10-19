@@ -2,7 +2,7 @@ import { ApiResponse, FilterParams } from "@/models/api";
 import { Tasks, TaskStatusKey } from "@/models/task";
 import { httpClient } from "./api";
 
-type TasksParams = {
+export type TasksParams = {
   title: string;
   description?: string;
   status?: TaskStatusKey;

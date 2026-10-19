@@ -11,7 +11,7 @@ export type TaskStatusKey = keyof typeof TaskStatus;
 export type Tasks = {
   id: number;
   title: string;
-  description: string;
+  description: string | null;
   status: TaskStatusKey;
   teams: Teams[];
   createdAt: string;
