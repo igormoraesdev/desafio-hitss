@@ -116,6 +116,15 @@ A API precisa estar no ar antes, pelo Docker ou em modo de desenvolvimento (seç
 cd frontend
 yarn
 yarn start      # abre o Metro; i para iOS, a para Android, ou leia o QR code no Expo Go
+```
+
+Verificações:
+
+```bash
+yarn lint                                 # eslint
+npx tsc --noEmit -p tsconfig.json         # tipos
+yarn test                                 # jest + Testing Library (tests/)
+```
 
 ## 4. Exemplos de requisições
 
@@ -129,4 +138,3 @@ Todos os endpoints podem ser testados direto no Swagger, em [http://localhost:30
 - **Cache.** As listagens são candidatas a cache curto (Redis ou HTTP cache) quando o volume justificar.
 - **Escalabilidade.** A API é stateless, então escala horizontalmente atrás de um load balancer; o banco seria gerenciado, com réplica de leitura se necessário.
 - **Entrega.** Pipeline de CI com lint, testes e build e variáveis de ambiente vindas de um secret manager.
-```
