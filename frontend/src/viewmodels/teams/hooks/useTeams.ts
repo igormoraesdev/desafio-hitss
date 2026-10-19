@@ -1,8 +1,4 @@
-import {
-  createTeams,
-  deleteTeam,
-  findAllTeams,
-} from "@/services/teams.service";
+import { deleteTeam, findAllTeams } from "@/services/teams.service";
 import {
   useInfiniteQuery,
   useMutation,
@@ -35,11 +31,6 @@ export const useTeams = (limit = PAGE_SIZE) => {
     },
   });
 
-  const createMutation = useMutation({
-    mutationFn: createTeams,
-    onSuccess: () => invalidateTeams(),
-  });
-
   const deleteMutation = useMutation({
     mutationFn: deleteTeam,
     onSuccess: (_, id) => invalidateTeams(id),
@@ -66,8 +57,6 @@ export const useTeams = (limit = PAGE_SIZE) => {
     error: teamsQuery.error,
     refetch: teamsQuery.refetch,
     loadMore,
-    createTeam: createMutation.mutateAsync,
-    isCreating: createMutation.isPending,
     removeTeam: deleteMutation.mutateAsync,
     isRemoving: deleteMutation.isPending,
     search,
