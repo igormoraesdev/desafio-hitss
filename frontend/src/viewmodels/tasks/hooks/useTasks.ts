@@ -1,10 +1,13 @@
-import { FilterParams } from "@/models/api";
+import { ApiResponse, FilterParams } from "@/models/api";
+import { Tasks, TaskStatusKey } from "@/models/task";
 import {
   createTasks,
   deleteTask,
   findAllTasks,
+  updateTask,
 } from "@/services/tasks.service";
 import {
+  InfiniteData,
   keepPreviousData,
   useInfiniteQuery,
   useMutation,
@@ -17,6 +20,26 @@ const PAGE_SIZE = 10;
 const SEARCH_DEBOUNCE_MS = 300;
 
 type TaskFilters = Omit<FilterParams, "search" | "page">;
+
+type TasksPages = InfiniteData<ApiResponse<Tasks[]>>;
+
+type UpdateStatusVariables = { id: number; status: TaskStatusKey };
+
+const patchTaskStatus = (
+  pages: TasksPages | undefined,
+  { id, status }: UpdateStatusVariables,
+): TasksPages | undefined => {
+  if (!pages) return pages;
+  return {
+    ...pages,
+    pages: pages.pages.map((page) => ({
+      ...page,
+      data: page.data.map((task) =>
+        task.id === id ? { ...task, status } : task,
+      ),
+    })),
+  };
+};
 
 export const useTasks = (initialFilters: TaskFilters = {}) => {
   const queryClient = useQueryClient();
@@ -66,6 +89,28 @@ export const useTasks = (initialFilters: TaskFilters = {}) => {
     onSuccess: () => invalidateTasks(),
   });
 
+  const updateStatusMutation = useMutation({
+    mutationFn: ({ id, status }: UpdateStatusVariables) =>
+      updateTask(id, { status }),
+    onMutate: async (variables) => {
+      await queryClient.cancelQueries({ queryKey: tasksKeys.all });
+      const snapshot = queryClient.getQueriesData<TasksPages>({
+        queryKey: tasksKeys.all,
+      });
+      queryClient.setQueriesData<TasksPages>(
+        { queryKey: tasksKeys.all },
+        (pages) => patchTaskStatus(pages, variables),
+      );
+      return { snapshot };
+    },
+    onError: (_, __, context) => {
+      context?.snapshot.forEach(([key, data]) => {
+        queryClient.setQueryData(key, data);
+      });
+    },
+    onSettled: (_, __, { id }) => invalidateTasks(id),
+  });
+
   const deleteMutation = useMutation({
     mutationFn: deleteTask,
     onSuccess: (_, id) => invalidateTasks(id),
@@ -93,6 +138,10 @@ export const useTasks = (initialFilters: TaskFilters = {}) => {
     loadMore,
     createTask: createMutation.mutateAsync,
     isCreating: createMutation.isPending,
+    updateStatus: updateStatusMutation.mutateAsync,
+    updatingTaskId: updateStatusMutation.isPending
+      ? updateStatusMutation.variables.id
+      : undefined,
     removeTask: deleteMutation.mutateAsync,
     isRemoving: deleteMutation.isPending,
     search,
