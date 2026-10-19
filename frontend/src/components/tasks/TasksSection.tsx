@@ -1,6 +1,7 @@
 import { Tasks } from "@/models/task";
 import { useTasks } from "@/viewmodels/tasks/hooks/useTasks";
 import { useTeamsDetail } from "@/viewmodels/teams/hooks/useTeamsDetail";
+import { TaskFilterValues } from "./TasksFilters";
 import { TasksList } from "./TasksList";
 
 type TasksSectionProps = {
@@ -14,10 +15,16 @@ export const TasksSection = ({ teamId }: TasksSectionProps) => {
     search,
     isLoading,
     isLoadingMore,
+    filters,
     setSearch,
+    setFilters,
     refetch,
     loadMore,
   } = useTasks({ teamId });
+
+  const onFiltersChange = (next: TaskFilterValues) => {
+    setFilters(next);
+  };
 
   const onTaskPress = (task: Tasks) => {
     // TODO: navegar para o detalhe da tarefa quando a rota existir
@@ -37,11 +44,17 @@ export const TasksSection = ({ teamId }: TasksSectionProps) => {
       team={team}
       tasks={tasks}
       search={search}
+      filters={{
+        status: filters.status,
+        sortBy: filters.sortBy,
+        order: filters.order,
+      }}
       isLoading={isLoading}
       isLoadingMore={isLoadingMore}
       refetch={refetch}
       onEndReached={loadMore}
       onSearchChange={setSearch}
+      onFiltersChange={onFiltersChange}
       onTaskPress={onTaskPress}
       onCreatePress={onCreatePress}
     />

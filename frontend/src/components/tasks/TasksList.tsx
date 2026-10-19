@@ -6,6 +6,7 @@ import { FlatList, FlatListProps, Platform } from "react-native";
 import { EmptyState } from "../layout/EmptyState";
 import { TaskButton } from "../layout/TaskButton";
 import { Button } from "../ui/Button";
+import { TaskFilterValues, TasksFilters } from "./TasksFilters";
 
 const DripsyFlatList = styled(FlatList)() as <T>(
   props: FlatListProps<T> & { sx?: Sx },
@@ -15,11 +16,13 @@ type TasksListProps = {
   team: Teams;
   tasks: Tasks[];
   search: string;
+  filters: TaskFilterValues;
   isLoading: boolean;
   isLoadingMore?: boolean;
   refetch?: () => Promise<unknown>;
   onEndReached?: () => void;
   onSearchChange: (text: string) => void;
+  onFiltersChange: (filters: TaskFilterValues) => void;
   onTaskPress: (task: Tasks) => void;
   onCreatePress?: () => void;
 };
@@ -46,9 +49,12 @@ export const TasksList = ({
   team,
   tasks,
   search,
+  filters,
   isLoadingMore,
   refetch,
   onEndReached,
+  onSearchChange,
+  onFiltersChange,
   onTaskPress,
   onCreatePress,
 }: TasksListProps) => {
@@ -66,6 +72,12 @@ export const TasksList = ({
 
   return (
     <Box sx={styles.content}>
+      <TasksFilters
+        search={search}
+        filters={filters}
+        onSearchChange={onSearchChange}
+        onFiltersChange={onFiltersChange}
+      />
       <DripsyFlatList
         sx={{ flex: 1 }}
         data={tasks}

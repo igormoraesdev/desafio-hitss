@@ -10,24 +10,36 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { tasksKeys } from "../constants/tasks";
 
 const PAGE_SIZE = 10;
+const SEARCH_DEBOUNCE_MS = 300;
 
 type TaskFilters = Omit<FilterParams, "search" | "page">;
 
 export const useTasks = (initialFilters: TaskFilters = {}) => {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [filters, setFilters] = useState<TaskFilters>({
     limit: PAGE_SIZE,
+    sortBy: "createdAt",
+    order: "desc",
     ...initialFilters,
   });
 
+  useEffect(() => {
+    const timeout = setTimeout(
+      () => setDebouncedSearch(search.trim()),
+      SEARCH_DEBOUNCE_MS,
+    );
+    return () => clearTimeout(timeout);
+  }, [search]);
+
   const params: FilterParams = {
     ...filters,
-    search: search.trim() || undefined,
+    search: debouncedSearch || undefined,
   };
 
   const invalidateTasks = (id?: number) => {
