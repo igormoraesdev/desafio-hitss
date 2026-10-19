@@ -39,8 +39,7 @@ export const TasksSection = ({ teamId }: TasksSectionProps) => {
   };
 
   const onTaskPress = (task: Tasks) => {
-    // TODO: navegar para o detalhe da tarefa quando a rota existir
-    console.log("task", task.id);
+    router.push(`/tasks/${String(task.id)}`);
   };
 
   const onCreatePress = () => {
