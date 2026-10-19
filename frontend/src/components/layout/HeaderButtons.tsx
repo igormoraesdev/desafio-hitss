@@ -1,7 +1,7 @@
 import Entypo from "@expo/vector-icons/Entypo";
 import Feather from "@expo/vector-icons/Feather";
 import { createThemedComponent, Flex } from "dripsy";
-import { GestureResponderEvent } from "react-native";
+import { GestureResponderEvent, Platform } from "react-native";
 import { Button } from "../ui/Button";
 
 type HeaderButtonsProps = {
@@ -27,7 +27,7 @@ export const HeaderButtons = ({
         height: 40,
         alignItems: "center",
         justifyContent: "space-between",
-        marginTop: "$3",
+        marginTop: Platform.select({ ios: "$3", android: "$6" }),
       }}
     >
       {leftIcon && (

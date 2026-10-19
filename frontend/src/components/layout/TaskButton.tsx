@@ -1,6 +1,7 @@
 import { TaskStatus, TaskStatusKey } from "@/models/task";
 import { Box, Flex, Text } from "dripsy";
 import { useMemo } from "react";
+import { Platform } from "react-native";
 import { Button } from "../ui/Button";
 
 type TaskButtonProps = {
@@ -28,7 +29,7 @@ const styles = {
   },
   badge: {
     minWidth: 82,
-    maxHeight: 26,
+    maxHeight: Platform.select({ android: 30, ios: 26 }),
     padding: "$2",
     justifyContent: "center",
     alignItems: "center",

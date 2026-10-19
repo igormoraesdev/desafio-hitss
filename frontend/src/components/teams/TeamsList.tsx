@@ -1,7 +1,12 @@
 import { Teams } from "@/models/team";
 import { Box, styled, Sx } from "dripsy";
 import { useState } from "react";
-import { ActivityIndicator, FlatList, FlatListProps } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  FlatListProps,
+  Platform,
+} from "react-native";
 import { EmptyState } from "../layout/EmptyState";
 import { TeamButton } from "../layout/TeamButton";
 import { TeamButtonSkeleton } from "../layout/TeamButtonSkeleton";
@@ -30,6 +35,7 @@ const styles = {
     width: "100%",
     gap: "$3",
     marginTop: "$5",
+    paddingBottom: Platform.select({ android: "$5", ios: undefined }),
   },
   skeletons: {
     flex: 1,

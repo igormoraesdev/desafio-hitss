@@ -2,7 +2,7 @@ import { Tasks } from "@/models/task";
 import { Teams } from "@/models/team";
 import { ActivityIndicator, Box, styled, Sx } from "dripsy";
 import { useState } from "react";
-import { FlatList, FlatListProps } from "react-native";
+import { FlatList, FlatListProps, Platform } from "react-native";
 import { EmptyState } from "../layout/EmptyState";
 import { TaskButton } from "../layout/TaskButton";
 import { Button } from "../ui/Button";
@@ -30,6 +30,7 @@ const styles = {
     width: "100%",
     gap: "$3",
     marginTop: "$5",
+    paddingBottom: Platform.select({ android: "$5", ios: undefined }),
   },
   skeletons: {
     flex: 1,

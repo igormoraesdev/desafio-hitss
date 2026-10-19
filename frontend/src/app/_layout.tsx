@@ -6,9 +6,10 @@ import { DripsyProvider } from "dripsy";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
+import { setBackgroundColorAsync } from "expo-system-ui";
 import { useEffect } from "react";
-
 SplashScreen.preventAutoHideAsync();
+setBackgroundColorAsync(theme.colors.$bgPrimary);
 
 const queryClient = new QueryClient();
 
@@ -31,7 +32,12 @@ export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <DripsyProvider theme={theme}>
-        <Stack screenOptions={{ headerShown: false }} />
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            contentStyle: { backgroundColor: theme.colors.$bgPrimary },
+          }}
+        />
       </DripsyProvider>
     </QueryClientProvider>
   );
