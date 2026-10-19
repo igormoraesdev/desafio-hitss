@@ -1,9 +1,14 @@
+import { Tasks } from "@/models/task";
 import { useCreateTask } from "@/viewmodels/tasks/hooks/useCreateTask";
 import { useTeams } from "@/viewmodels/teams/hooks/useTeams";
 import { TaskCreateForm } from "./TaskCreateForm";
 
-export const TaskCreateSection = () => {
-  const form = useCreateTask();
+type TaskCreateSectionProps = {
+  task?: Tasks;
+};
+
+export const TaskCreateSection = ({ task }: TaskCreateSectionProps) => {
+  const form = useCreateTask(task);
   const { teams, isLoading, isLoadingMore, loadMore } = useTeams();
 
   return (
