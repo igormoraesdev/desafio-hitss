@@ -1,7 +1,8 @@
 import { Teams } from "@/models/team";
-import { Box, styled, Sx, Text } from "dripsy";
+import { Box, styled, Sx } from "dripsy";
 import { useState } from "react";
 import { ActivityIndicator, FlatList, FlatListProps } from "react-native";
+import { EmptyState } from "../layout/EmptyState";
 import { TeamButton } from "../layout/TeamButton";
 import { TeamButtonSkeleton } from "../layout/TeamButtonSkeleton";
 import { Button } from "../ui/Button";
@@ -38,43 +39,7 @@ const styles = {
     paddingVertical: "$3",
     alignItems: "center",
   },
-  empty: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    gap: "$2",
-    paddingHorizontal: "$4",
-  },
-  emptyTitle: {
-    color: "$white",
-    textAlign: "center",
-  },
-  emptyDescription: {
-    color: "$darkGrey",
-    textAlign: "center",
-  },
 } as const;
-
-type EmptyStateProps = {
-  search: string;
-};
-
-const EmptyState = ({ search }: EmptyStateProps) => {
-  const hasSearch = search.trim().length > 0;
-
-  return (
-    <Box sx={styles.empty}>
-      <Text variant="h2" sx={styles.emptyTitle}>
-        Nenhum time encontrado
-      </Text>
-      <Text variant="paragraph" sx={styles.emptyDescription}>
-        {hasSearch
-          ? `Não há times com "${search.trim()}".`
-          : "Crie o primeiro time para começar."}
-      </Text>
-    </Box>
-  );
-};
 
 export const TeamList = ({
   teams,
@@ -125,7 +90,7 @@ export const TeamList = ({
               onPress={() => onTeamPress(item)}
             />
           )}
-          ListEmptyComponent={<EmptyState search={search} />}
+          ListEmptyComponent={<EmptyState isTeam search={search} />}
           ListFooterComponent={
             isLoadingMore ? (
               <Box sx={styles.footer}>
