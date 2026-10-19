@@ -22,7 +22,23 @@ Transversal a tudo, em `src/common`: um interceptor que envelopa toda resposta e
 
 **Logs com Pino.** Estruturados, com `x-request-id` propagado (ou gerado) em toda requisição, o que permite seguir uma chamada do controller ao banco. Em desenvolvimento a saída é legível; em produção vira JSON.
 
-**Frontend.** O app usa Expo com Expo Router (navegação por arquivos) e TypeScript. As decisões sobre camada de dados e estado serão documentadas aqui conforme o app for implementado.
+**Frontend: Expo + Expo Router.** Navegação por arquivos em `src/app`, com rotas tipadas (`experiments.typedRoutes`): um `router.push` para uma rota que não existe falha na compilação. As telas são finas: montam o `Container` com o cabeçalho e delegam o conteúdo a uma _section_.
+
+**MVVM no app.** Cada camada tem uma pasta em `frontend/src`:
+
+- `models` — tipos das entidades (`Teams`, `Tasks`) e do envelope da API (`ApiResponse`, `Meta`, filtros).
+- `services` — cliente HTTP (axios) e uma função por endpoint. Só falam com a rede, não guardam estado.
+- `viewmodels` — hooks por domínio (`useTeams`, `useTasks`, `useTaskDetail`, `useCreateTask`...) que juntam TanStack Query, mutações, filtros e navegação, e entregam para a view só dados prontos e callbacks. As chaves de cache ficam em `viewmodels/*/constants`.
+- `schemas` — validação dos formulários com Zod, em português.
+- `components` — views. `ui` são peças genéricas (`Button`, `Input`, `Skeleton`, seletor de cor), `layout` as peças de tela (`Container`, `HeaderButtons`, `EmptyState`), e `teams`/`tasks` tudo que é de cada domínio: botões, skeletons, listas, filtros, formulários e as _sections_. Uma _section_ é o único componente que chama um viewmodel; o resto recebe props.
+
+**Estado de servidor: TanStack Query.** As listas usam `useInfiniteQuery` com a paginação do backend (10 por página, carrega mais ao chegar no fim). Criar, editar e excluir invalidam as listas afetadas. A troca de status da tarefa é otimista: a UI atualiza na hora, e se o PATCH falhar o cache volta ao snapshot anterior. A busca de tarefas é feita no servidor com _debounce_ de 300 ms.
+
+**Formulários: react-hook-form + Zod.** O schema é a única fonte das regras (tamanhos, obrigatoriedade, mensagens) e seus tipos de entrada e saída alimentam o `useForm`. O mesmo formulário serve para criar e editar uma tarefa.
+
+**Estilo: dripsy.** Tema único em `src/styles/theme.ts` (cores, espaçamentos, variantes de texto) consumido via `sx`. Animações de toque com Reanimated.
+
+**Endereço da API.** O app descobre o host do Metro em tempo de execução (`expo-constants`) e assume a API na porta 3000 do mesmo IP. Assim o mesmo código funciona no simulador iOS, no emulador Android e num celular físico na mesma rede, sem configurar nada.
 
 ## 2. Modelo de dados
 
@@ -89,11 +105,17 @@ Testes: `yarn test` (unitários, sem banco). Lint: `yarn lint`. Para zerar o ban
 
 ### Frontend
 
+Pré-requisitos: Node 24, Yarn e, para rodar o app, um destes:
+
+- **Expo Go** no celular (iOS ou Android), na mesma rede Wi-Fi do computador.
+- Simulador iOS (Xcode) ou emulador Android (Android Studio).
+
+A API precisa estar no ar antes, pelo Docker ou em modo de desenvolvimento (seções acima), em `http://localhost:3000`.
+
 ```bash
 cd frontend
 yarn
-yarn start      # abre o Expo; i para iOS, a para Android
-```
+yarn start      # abre o Metro; i para iOS, a para Android, ou leia o QR code no Expo Go
 
 ## 4. Exemplos de requisições
 
@@ -107,3 +129,4 @@ Todos os endpoints podem ser testados direto no Swagger, em [http://localhost:30
 - **Cache.** As listagens são candidatas a cache curto (Redis ou HTTP cache) quando o volume justificar.
 - **Escalabilidade.** A API é stateless, então escala horizontalmente atrás de um load balancer; o banco seria gerenciado, com réplica de leitura se necessário.
 - **Entrega.** Pipeline de CI com lint, testes e build e variáveis de ambiente vindas de um secret manager.
+```
