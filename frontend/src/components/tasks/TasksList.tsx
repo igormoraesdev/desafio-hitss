@@ -5,6 +5,7 @@ import { useState } from "react";
 import { FlatList, FlatListProps, Platform } from "react-native";
 import { EmptyState } from "../layout/EmptyState";
 import { TaskButton } from "../layout/TaskButton";
+import { TaskButtonSkeleton } from "../layout/TaskButtonSkeleton";
 import { Button } from "../ui/Button";
 import { TaskFilterValues, TasksFilters } from "./TasksFilters";
 
@@ -50,6 +51,7 @@ export const TasksList = ({
   tasks,
   search,
   filters,
+  isLoading,
   isLoadingMore,
   refetch,
   onEndReached,
@@ -78,35 +80,43 @@ export const TasksList = ({
         onSearchChange={onSearchChange}
         onFiltersChange={onFiltersChange}
       />
-      <DripsyFlatList
-        sx={{ flex: 1 }}
-        data={tasks}
-        keyExtractor={(item) => String(item.id)}
-        renderItem={({ item }) => (
-          <TaskButton
-            title={item.title}
-            description={item.description}
-            teamName={team.name}
-            status={item.status}
-            onPress={() => onTaskPress(item)}
-          />
-        )}
-        ListEmptyComponent={<EmptyState isTeam={false} search={search} />}
-        ListFooterComponent={
-          isLoadingMore ? (
-            <Box sx={styles.footer}>
-              <ActivityIndicator color="#00875F" />
-            </Box>
-          ) : null
-        }
-        onEndReached={onEndReached}
-        onEndReachedThreshold={0.3}
-        contentContainerStyle={{ gap: 16, flexGrow: 1 }}
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
-        refreshing={isRefreshing}
-        onRefresh={handleRefresh}
-      />
+      {isLoading ? (
+        <Box sx={styles.skeletons}>
+          <TaskButtonSkeleton />
+          <TaskButtonSkeleton />
+          <TaskButtonSkeleton />
+        </Box>
+      ) : (
+        <DripsyFlatList
+          sx={{ flex: 1 }}
+          data={tasks}
+          keyExtractor={(item) => String(item.id)}
+          renderItem={({ item }) => (
+            <TaskButton
+              title={item.title}
+              description={item.description}
+              teamName={team.name}
+              status={item.status}
+              onPress={() => onTaskPress(item)}
+            />
+          )}
+          ListEmptyComponent={<EmptyState isTeam={false} search={search} />}
+          ListFooterComponent={
+            isLoadingMore ? (
+              <Box sx={styles.footer}>
+                <ActivityIndicator color="#00875F" />
+              </Box>
+            ) : null
+          }
+          onEndReached={onEndReached}
+          onEndReachedThreshold={0.3}
+          contentContainerStyle={{ gap: 16, flexGrow: 1 }}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          refreshing={isRefreshing}
+          onRefresh={handleRefresh}
+        />
+      )}
       <Button onPress={onCreatePress}>Nova tarefa</Button>
     </Box>
   );
