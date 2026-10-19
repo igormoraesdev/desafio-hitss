@@ -1,6 +1,7 @@
 import { Tasks, TaskStatusKey } from "@/models/task";
 import { useTasks } from "@/viewmodels/tasks/hooks/useTasks";
 import { useTeamsDetail } from "@/viewmodels/teams/hooks/useTeamsDetail";
+import { useRouter } from "expo-router";
 import { TaskFilterValues } from "./TasksFilters";
 import { TasksList } from "./TasksList";
 
@@ -9,6 +10,7 @@ type TasksSectionProps = {
 };
 
 export const TasksSection = ({ teamId }: TasksSectionProps) => {
+  const router = useRouter();
   const { team } = useTeamsDetail(teamId);
   const {
     tasks,
@@ -42,7 +44,7 @@ export const TasksSection = ({ teamId }: TasksSectionProps) => {
   };
 
   const onCreatePress = () => {
-    // TODO: navegar para a criação de tarefa quando a rota existir
+    router.push("/tasks/new");
   };
 
   if (!team) {
