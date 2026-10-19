@@ -11,27 +11,32 @@ import { useTasks } from "./useTasks";
 
 export const useCreateTask = (task?: Tasks) => {
   const router = useRouter();
-  const { createTask, isCreating } = useTasks();
+  const { createTask, isCreating, editTask, isEditing } = useTasks();
 
   const form = useForm<CreateTaskFormInput, unknown, CreateTaskFormSchema>({
     resolver: zodResolver(createTaskSchema),
     defaultValues: {
-      title: task?.title,
-      description: task?.description,
+      title: task?.title ?? "",
+      description: task?.description ?? undefined,
       status: task?.status,
       teamIds: task?.teams.map((item) => item.id),
     },
   });
 
   const onSubmit = form.handleSubmit(async (values) => {
-    await createTask(values);
+    if (task) {
+      await editTask({ id: task.id, params: values });
+    } else {
+      await createTask(values);
+    }
     router.back();
   });
 
   return {
     control: form.control,
     errors: form.formState.errors,
-    isSubmitting: isCreating,
+    isSubmitting: isCreating || isEditing,
+    isEdit: task !== undefined,
     onSubmit,
   };
 };
