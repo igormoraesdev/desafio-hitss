@@ -2,7 +2,7 @@ import { Teams } from "@/models/team";
 import {
   CreateTaskFormInput,
   CreateTaskFormSchema,
-} from "@/schemas/tasks/task.schema";
+} from "@/schemas/task.schema";
 import { Box, Text } from "dripsy";
 import { Control, Controller, FieldErrors } from "react-hook-form";
 import { Platform } from "react-native";
@@ -15,6 +15,7 @@ type TaskCreateFormProps = {
   control: Control<CreateTaskFormInput, unknown, CreateTaskFormSchema>;
   errors: FieldErrors<CreateTaskFormInput>;
   isSubmitting: boolean;
+  isEdit?: boolean;
   onSubmit: () => void;
   teams: Teams[];
   isLoadingTeams?: boolean;
@@ -26,6 +27,7 @@ export const TaskCreateForm = ({
   control,
   errors,
   isSubmitting,
+  isEdit,
   onSubmit,
   teams,
   isLoadingTeams,
@@ -104,7 +106,7 @@ export const TaskCreateForm = ({
         )}
       </Box>
       <Button onPress={onSubmit} disabled={isSubmitting}>
-        Criar
+        {isEdit ? "Salvar" : "Criar"}
       </Button>
     </Box>
   );
