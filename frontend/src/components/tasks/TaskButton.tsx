@@ -3,7 +3,7 @@ import Feather from "@expo/vector-icons/Feather";
 import { Box, createThemedComponent, Flex, Text } from "dripsy";
 import { Fragment, useState } from "react";
 import { ActivityIndicator, Platform } from "react-native";
-import { TaskStatusModal } from "../tasks/TaskStatusModal";
+import { TaskStatusModal } from "./TaskStatusModal";
 
 import { TASK_STATUS_FORMAT } from "@/viewmodels/tasks/constants/tasks";
 import { Button } from "../ui/Button";

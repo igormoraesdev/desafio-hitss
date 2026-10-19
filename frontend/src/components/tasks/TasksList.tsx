@@ -4,9 +4,9 @@ import { ActivityIndicator, Box, styled, Sx } from "dripsy";
 import { useState } from "react";
 import { FlatList, FlatListProps, Platform } from "react-native";
 import { EmptyState } from "../layout/EmptyState";
-import { TaskButton } from "../layout/TaskButton";
-import { TaskButtonSkeleton } from "../layout/TaskButtonSkeleton";
 import { Button } from "../ui/Button";
+import { TaskButton } from "./TaskButton";
+import { TaskButtonSkeleton } from "./TaskButtonSkeleton";
 import { TaskFilterValues, TasksFilters } from "./TasksFilters";
 
 const DripsyFlatList = styled(FlatList)() as <T>(
