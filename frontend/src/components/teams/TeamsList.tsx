@@ -1,7 +1,7 @@
 import { Teams } from "@/models/team";
 import { Box, styled, Sx, Text } from "dripsy";
 import { useState } from "react";
-import { FlatList, FlatListProps } from "react-native";
+import { ActivityIndicator, FlatList, FlatListProps } from "react-native";
 import { TeamButton } from "../layout/TeamButton";
 import { TeamButtonSkeleton } from "../layout/TeamButtonSkeleton";
 import { Button } from "../ui/Button";
@@ -15,7 +15,9 @@ type TeamListProps = {
   teams: Teams[];
   search: string;
   isLoading: boolean;
+  isLoadingMore?: boolean;
   refetch?: () => Promise<unknown>;
+  onEndReached?: () => void;
   onSearchChange: (text: string) => void;
   onTeamPress: (team: Teams) => void;
   onCreatePress?: () => void;
@@ -31,6 +33,10 @@ const styles = {
   skeletons: {
     flex: 1,
     gap: "$3",
+  },
+  footer: {
+    paddingVertical: "$3",
+    alignItems: "center",
   },
   empty: {
     flex: 1,
@@ -74,7 +80,9 @@ export const TeamList = ({
   teams,
   search,
   isLoading,
+  isLoadingMore = false,
   refetch,
+  onEndReached,
   onSearchChange,
   onTeamPress,
   onCreatePress,
@@ -118,6 +126,15 @@ export const TeamList = ({
             />
           )}
           ListEmptyComponent={<EmptyState search={search} />}
+          ListFooterComponent={
+            isLoadingMore ? (
+              <Box sx={styles.footer}>
+                <ActivityIndicator color="#00875F" />
+              </Box>
+            ) : null
+          }
+          onEndReached={onEndReached}
+          onEndReachedThreshold={0.3}
           contentContainerStyle={{ gap: 16, flexGrow: 1 }}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
