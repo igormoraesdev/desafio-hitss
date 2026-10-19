@@ -8,8 +8,8 @@ import {
   Platform,
 } from "react-native";
 import { EmptyState } from "../layout/EmptyState";
-import { TeamButton } from "../layout/TeamButton";
-import { TeamButtonSkeleton } from "../layout/TeamButtonSkeleton";
+import { TeamButton } from "./TeamButton";
+import { TeamButtonSkeleton } from "./TeamButtonSkeleton";
 import { Button } from "../ui/Button";
 import { Input } from "../ui/Input";
 
