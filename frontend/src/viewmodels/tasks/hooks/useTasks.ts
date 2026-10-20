@@ -83,12 +83,12 @@ export const useTasks = (initialFilters: TaskFilters = {}) => {
     mutationFn: ({ id, status }: UpdateStatusVariables) =>
       updateTask(id, { status }),
     onMutate: async (variables) => {
-      await queryClient.cancelQueries({ queryKey: tasksKeys.all });
+      await queryClient.cancelQueries({ queryKey: tasksKeys.lists });
       const snapshot = queryClient.getQueriesData<TasksPages>({
-        queryKey: tasksKeys.all,
+        queryKey: tasksKeys.lists,
       });
       queryClient.setQueriesData<TasksPages>(
-        { queryKey: tasksKeys.all },
+        { queryKey: tasksKeys.lists },
         (pages) => patchTaskStatus(pages, variables),
       );
       return { snapshot };

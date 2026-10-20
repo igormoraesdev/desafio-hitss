@@ -8,8 +8,9 @@ export type TaskStatusFormat = {
 
 export const tasksKeys = {
   all: ["tasks"] as const,
+  lists: ["tasks", "list"] as const,
   list: (filters: FilterParams) => ["tasks", "list", filters] as const,
-  detail: (id: number) => ["tasks", id] as const,
+  detail: (id: number) => ["tasks", "detail", id] as const,
 };
 
 export const TASK_STATUS_FORMAT: Record<TaskStatusKey, TaskStatusFormat> = {
