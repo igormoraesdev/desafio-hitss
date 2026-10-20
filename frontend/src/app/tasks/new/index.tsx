@@ -15,7 +15,7 @@ export default function NewTaskscreen() {
     <Container
       title="Nova tarefa"
       description="crie sua tarefa"
-      spaceTitleContent={80}
+      spaceTitleContent={20}
       header={<HeaderButtons leftIcon onLeftPress={router.back} />}
       titleIcon={
         <CheckIcon name="check-square" size={56} sx={{ color: "$green" }} />

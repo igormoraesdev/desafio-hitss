@@ -15,7 +15,9 @@ export const createTaskSchema = z.object({
     .max(500, "A descrição pode ter no máximo 500 caracteres")
     .optional(),
   status: z.enum(TASK_STATUS_KEYS, "Escolha um status"),
-  teamIds: z.array(z.number().int().positive()).optional(),
+  teamIds: z
+    .array(z.number().int().positive(), "Selecione ao menos um time")
+    .min(1, "Selecione ao menos um time"),
 });
 
 export type CreateTaskFormInput = z.input<typeof createTaskSchema>;
