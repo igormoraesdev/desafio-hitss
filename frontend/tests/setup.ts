@@ -9,6 +9,9 @@ jest.mock("@expo/vector-icons/Feather", () =>
 jest.mock("@expo/vector-icons/Entypo", () =>
   jest.requireActual("./utils/iconMock"),
 );
+jest.mock("@expo/vector-icons/FontAwesome", () =>
+  jest.requireActual("./utils/iconMock"),
+);
 jest.mock("@expo/vector-icons/AntDesign", () =>
   jest.requireActual("./utils/iconMock"),
 );
