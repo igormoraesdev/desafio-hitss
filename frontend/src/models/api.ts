@@ -21,6 +21,10 @@ export type PaginationParams = {
   limit?: number;
 };
 
+export type TeamFilterParams = PaginationParams & {
+  search?: string;
+};
+
 export type FilterParams = PaginationParams & {
   teamId?: number;
   status?: Status;

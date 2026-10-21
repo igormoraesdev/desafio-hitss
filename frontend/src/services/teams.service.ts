@@ -1,4 +1,4 @@
-import { ApiResponse, PaginationParams } from "@/models/api";
+import { ApiResponse, TeamFilterParams } from "@/models/api";
 import { Teams } from "@/models/team";
 import { httpClient } from "./api";
 
@@ -16,7 +16,7 @@ export const createTeams = async (params: TeamsParams) => {
   return response.data;
 };
 
-export const findAllTeams = async (params?: PaginationParams) => {
+export const findAllTeams = async (params?: TeamFilterParams) => {
   const response = await httpClient.get<ApiResponse<Teams[]>>("/v1/teams", {
     params,
   });

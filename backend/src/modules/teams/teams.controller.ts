@@ -18,7 +18,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { Paginated } from 'src/common/pagination/pagination';
-import { PaginationQueryDto } from 'src/common/pagination/pagination-query.dto';
 import {
   ApiDataResponse,
   ApiErrorResponses,
@@ -26,6 +25,7 @@ import {
 } from 'src/common/swagger/api-responses.decorator';
 import { Teams } from 'src/generated/prisma/client';
 import { CreateTeamDto } from './dto/create-team.dto';
+import { FindTeamsQueryDto } from './dto/find-teams-query.dto';
 import { TeamDto } from './dto/team.dto';
 import { UpdateTeamDto } from './dto/update-team.dto';
 import { TeamsService } from './teams.service';
@@ -52,11 +52,12 @@ export class TeamsController {
   @Get()
   @ApiOperation({
     summary: 'Lista times',
-    description: 'Paginado e ordenado por nome. Cada time inclui suas tasks.',
+    description:
+      'Paginado e ordenado por nome, com busca opcional por trecho do nome. Cada time inclui suas tasks.',
   })
   @ApiPaginatedResponse(TeamDto)
   @ApiErrorResponses(HttpStatus.BAD_REQUEST)
-  findAll(@Query() query: PaginationQueryDto): Promise<Paginated<Teams>> {
+  findAll(@Query() query: FindTeamsQueryDto): Promise<Paginated<Teams>> {
     return this.teamsService.findAll(query);
   }
 

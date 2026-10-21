@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { PageParams, PageResult } from '../../../common/pagination/pagination';
-import { Teams } from '../../../generated/prisma/client';
+import { PageResult } from '../../../common/pagination/pagination';
+import { Prisma, Teams } from '../../../generated/prisma/client';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { CreateTeamDto } from '../dto/create-team.dto';
 import { UpdateTeamDto } from '../dto/update-team.dto';
-import { TeamsRepository } from './teams.repository';
+import { FindTeamsOptions, TeamsRepository } from './teams.repository';
 
 @Injectable()
 export class PrismaTeamsRepository implements TeamsRepository {
@@ -14,15 +14,24 @@ export class PrismaTeamsRepository implements TeamsRepository {
     return this.prisma.teams.create({ data });
   }
 
-  async findAll({ skip, take }: PageParams): Promise<PageResult<Teams>> {
+  async findAll({
+    filters,
+    page: { skip, take },
+  }: FindTeamsOptions): Promise<PageResult<Teams>> {
+    const where: Prisma.TeamsWhereInput = {
+      name: filters.search
+        ? { contains: filters.search, mode: Prisma.QueryMode.insensitive }
+        : undefined,
+    };
     const [items, total] = await this.prisma.$transaction([
       this.prisma.teams.findMany({
+        where,
         skip,
         take,
         include: { tasks: true },
         orderBy: { name: 'asc' },
       }),
-      this.prisma.teams.count(),
+      this.prisma.teams.count({ where }),
     ]);
     return { items, total };
   }

@@ -5,8 +5,8 @@ import {
 } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { getLoggerToken } from 'nestjs-pino';
-import { PaginationQueryDto } from '../../common/pagination/pagination-query.dto';
 import { Teams } from '../../generated/prisma/client';
+import { FindTeamsQueryDto } from './dto/find-teams-query.dto';
 import {
   TEAMS_REPOSITORY,
   TeamsRepository,
@@ -81,17 +81,34 @@ describe('TeamsService', () => {
   describe('findAll', () => {
     it('devolve data e meta calculados a partir de page e limit', async () => {
       repository.findAll.mockResolvedValue({ items: [team], total: 23 });
-      const query = Object.assign(new PaginationQueryDto(), {
+      const query = Object.assign(new FindTeamsQueryDto(), {
         page: 2,
         limit: 10,
       });
 
       const result = await service.findAll(query);
 
-      expect(repository.findAll).toHaveBeenCalledWith({ skip: 10, take: 10 });
+      expect(repository.findAll).toHaveBeenCalledWith({
+        filters: { search: undefined },
+        page: { skip: 10, take: 10 },
+      });
       expect(result).toEqual({
         data: [team],
         meta: { page: 2, limit: 10, total: 23, totalPages: 3 },
+      });
+    });
+
+    it('repassa a busca por nome ao repositório', async () => {
+      repository.findAll.mockResolvedValue({ items: [team], total: 1 });
+      const query = Object.assign(new FindTeamsQueryDto(), {
+        search: 'alp',
+      });
+
+      await service.findAll(query);
+
+      expect(repository.findAll).toHaveBeenCalledWith({
+        filters: { search: 'alp' },
+        page: { skip: 0, take: 10 },
       });
     });
   });
