@@ -1,12 +1,14 @@
 import { Container } from "@/components/layout/Container";
 import { HeaderButtons } from "@/components/layout/HeaderButtons";
 import { TasksSection } from "@/components/tasks/TasksSection";
+import { useTeamsDetail } from "@/viewmodels/teams/hooks/useTeamsDetail";
 import { useLocalSearchParams, useRouter } from "expo-router";
 
 export default function TeamDetailsScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const teamId = Number(id);
+  const { onDeletePress } = useTeamsDetail(teamId);
 
   const onEditPress = () => {
     router.push(`/teams/${String(teamId)}/edit`);
@@ -20,8 +22,10 @@ export default function TeamDetailsScreen() {
         <HeaderButtons
           leftIcon
           editIcon
+          rightIcon
           onLeftPress={router.back}
           onEditPress={onEditPress}
+          onRightPress={onDeletePress}
         />
       }
       content={<TasksSection teamId={teamId} />}
