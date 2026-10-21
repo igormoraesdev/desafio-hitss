@@ -60,6 +60,23 @@ const tasks: TaskSeed[] = [
     status: Status.PENDING,
     teams: [],
   },
+  {
+    title: 'Publicar build de homologação',
+    description: 'Gerar o build e distribuir para o time de testes',
+    status: Status.COMPLETED,
+    teams: ['QA'],
+  },
+  {
+    title: 'Adicionar filtro por time na lista',
+    description: 'Chip com a cor do time e filtro na listagem global',
+    status: Status.IN_PROGRESS,
+    teams: ['Frontend', 'Backend'],
+  },
+  {
+    title: 'Configurar CI com lint e testes',
+    status: Status.PENDING,
+    teams: [],
+  },
 ];
 
 const prisma = new PrismaClient({
