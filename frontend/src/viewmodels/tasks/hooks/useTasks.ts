@@ -1,7 +1,7 @@
 import { ApiResponse, FilterParams } from "@/models/api";
 import { Tasks, TaskStatusKey } from "@/models/task";
 import { getApiErrorMessage } from "@/services/api";
-import { deleteTask, findAllTasks, updateTask } from "@/services/tasks.service";
+import { findAllTasks, updateTask } from "@/services/tasks.service";
 import {
   InfiniteData,
   keepPreviousData,
@@ -107,11 +107,6 @@ export const useTasks = (initialFilters: TaskFilters = {}) => {
     onSettled: (_, __, { id }) => invalidateTasks(id),
   });
 
-  const deleteMutation = useMutation({
-    mutationFn: deleteTask,
-    onSuccess: (_, id) => invalidateTasks(id),
-  });
-
   const updateFilters = (next: Partial<TaskFilters>) => {
     setFilters((current) => ({ ...current, ...next }));
   };
@@ -124,11 +119,8 @@ export const useTasks = (initialFilters: TaskFilters = {}) => {
 
   return {
     tasks: tasksQuery.data?.pages.flatMap((page) => page.data) ?? [],
-    total: tasksQuery.data?.pages.at(-1)?.meta?.total ?? 0,
     isLoading: tasksQuery.isPending,
-    isFetching: tasksQuery.isFetching,
     isLoadingMore: tasksQuery.isFetchingNextPage,
-    hasMore: tasksQuery.hasNextPage,
     error: tasksQuery.error,
     refetch: tasksQuery.refetch,
     loadMore,
@@ -136,8 +128,6 @@ export const useTasks = (initialFilters: TaskFilters = {}) => {
     updatingTaskId: updateStatusMutation.isPending
       ? updateStatusMutation.variables.id
       : undefined,
-    removeTask: deleteMutation.mutateAsync,
-    isRemoving: deleteMutation.isPending,
     search,
     setSearch,
     filters,

@@ -28,7 +28,7 @@ Transversal a tudo, em `src/common`: um interceptor que envelopa toda resposta e
 
 - `models` — tipos das entidades (`Teams`, `Tasks`) e do envelope da API (`ApiResponse`, `Meta`, filtros).
 - `services` — cliente HTTP (axios) e uma função por endpoint. Só falam com a rede, não guardam estado.
-- `viewmodels` — hooks por domínio (`useTeams`, `useTasks`, `useTaskDetail`, `useCreateTask`...) que juntam TanStack Query, mutações, filtros e navegação, e entregam para a view só dados prontos e callbacks. As chaves de cache ficam em `viewmodels/*/constants`.
+- `viewmodels` — hooks por domínio que juntam TanStack Query, filtros e navegação, e entregam para a view só dados prontos e callbacks. `useTeams` e `useTasks` cuidam das listas (busca, paginação e troca otimista de status); `useCreateTeam` e `useCreateTask` dos formulários de criar e editar; `useTeamsDetail` e `useTaskDetail` do carregamento e da exclusão de um item. As chaves de cache ficam em `viewmodels/*/constants`.
 - `schemas` — validação dos formulários com Zod, em português.
 - `components` — views. `ui` são peças genéricas (`Button`, `Input`, `Skeleton`, seletor de cor), `layout` as peças de tela (`Container`, `HeaderButtons`, `EmptyState`), e `teams`/`tasks` tudo que é de cada domínio: botões, skeletons, listas, filtros, formulários e as _sections_. Uma _section_ é o único componente que chama um viewmodel; o resto recebe props.
 
@@ -81,7 +81,7 @@ cp .env.example .env
 docker compose up --build
 ```
 
-Isso sobe o Postgres e o backend. O container do backend aplica as migrations, roda o seed (3 times e 7 tarefas) e inicia a API em `http://localhost:3000`. Para mudar a porta, ajuste `BACKEND_PORT` no `.env`. O seed é idempotente, então subir de novo não duplica dados.
+Isso sobe o Postgres e o backend. O container do backend aplica as migrations, roda o seed (3 times e 10 tarefas) e inicia a API em `http://localhost:3000`. Para mudar a porta, ajuste `BACKEND_PORT` no `.env`. O seed é idempotente, então subir de novo não duplica dados.
 
 A documentação interativa fica em [http://localhost:3000/docs](http://localhost:3000/docs). Para checar que está tudo de pé: `GET /v1/health`.
 
@@ -101,7 +101,7 @@ yarn prisma:seed                     # dados de exemplo
 yarn start:dev                       # http://localhost:3000 com reload
 ```
 
-Testes: `yarn test` (unitários, sem banco). Lint: `yarn lint`. Para zerar o banco e recarregar o seed: `yarn prisma migrate reset`.
+Testes: `yarn test` (unitários, sem banco) e `yarn test:e2e` (sobe a API contra o Postgres do compose e exercita todas as rotas; precisa do banco no ar). Lint: `yarn lint`. Para zerar o banco e recarregar o seed: `yarn prisma migrate reset`.
 
 ### Frontend
 
@@ -129,6 +129,175 @@ yarn test                                 # jest + Testing Library (tests/)
 ## 4. Exemplos de requisições
 
 Todos os endpoints podem ser testados direto no Swagger, em [http://localhost:3000/docs](http://localhost:3000/docs), com os schemas, exemplos e respostas de erro de cada rota. O documento OpenAPI bruto fica em `/docs/json`, pronto para importar no Insomnia ou Postman.
+
+Os exemplos abaixo usam `curl` contra a API no ar com o seed aplicado. Toda resposta de sucesso vem em `{ data, meta? }`; toda falha vem em `{ error: { code, message, details? } }`.
+
+### Health
+
+```bash
+curl http://localhost:3000/v1/health
+```
+
+```json
+{
+  "data": {
+    "status": "ok",
+    "database": "up",
+    "timestamp": "2026-10-21T20:26:49.551Z"
+  }
+}
+```
+
+### Times
+
+Listar, com paginação e busca por trecho do nome (sem diferenciar maiúsculas). Cada time vem com suas tarefas.
+
+```bash
+curl "http://localhost:3000/v1/teams?page=1&limit=10&search=front"
+```
+
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "name": "Frontend",
+      "color": "#3b82f6",
+      "createdAt": "2026-10-16T21:12:31.494Z",
+      "updatedAt": "2026-10-21T20:08:53.522Z",
+      "tasks": [
+        {
+          "id": 3,
+          "title": "Criar tela de listagem de tarefas",
+          "status": "IN_PROGRESS"
+        }
+      ]
+    }
+  ],
+  "meta": { "page": 1, "limit": 10, "total": 1, "totalPages": 1 }
+}
+```
+
+Criar. O nome é único e a cor aceita hex de 3 ou 6 dígitos.
+
+```bash
+curl -X POST http://localhost:3000/v1/teams \
+  -H "Content-Type: application/json" \
+  -d '{ "name": "Design", "color": "#a855f7" }'
+```
+
+```json
+{
+  "data": {
+    "id": 4,
+    "name": "Design",
+    "color": "#a855f7",
+    "createdAt": "...",
+    "updatedAt": "..."
+  }
+}
+```
+
+Buscar por id, atualizar parcialmente e remover. Remover um time não apaga as tarefas, só o vínculo.
+
+```bash
+curl http://localhost:3000/v1/teams/4
+
+curl -X PATCH http://localhost:3000/v1/teams/4 \
+  -H "Content-Type: application/json" \
+  -d '{ "color": "#f59e0b" }'
+
+curl -X DELETE http://localhost:3000/v1/teams/4        # 204 sem corpo
+```
+
+### Tarefas
+
+Listar, com filtros combináveis: `teamId`, `status` (`PENDING`, `IN_PROGRESS`, `COMPLETED`), `search` no título, `sortBy` (`title`, `status`, `createdAt`, `updatedAt`), `order` (`asc`, `desc`), `page` e `limit`. Sem `teamId`, lista as tarefas de todos os times.
+
+```bash
+curl "http://localhost:3000/v1/tasks?teamId=1&status=IN_PROGRESS&search=tela&sortBy=createdAt&order=desc&page=1&limit=10"
+```
+
+```json
+{
+  "data": [
+    {
+      "id": 3,
+      "title": "Criar tela de listagem de tarefas",
+      "description": "Lista com filtros por status, time e busca",
+      "status": "IN_PROGRESS",
+      "createdAt": "2026-10-16T21:12:31.560Z",
+      "updatedAt": "2026-10-21T20:08:53.590Z",
+      "teams": [
+        {
+          "id": 1,
+          "name": "Frontend",
+          "color": "#3b82f6",
+          "createdAt": "...",
+          "updatedAt": "..."
+        }
+      ]
+    }
+  ],
+  "meta": { "page": 1, "limit": 10, "total": 1, "totalPages": 1 }
+}
+```
+
+Criar. `title` tem entre 3 e 100 caracteres; `description`, `status` e `teamIds` são opcionais. Sem `status`, nasce `PENDING`; sem `teamIds`, nasce sem time.
+
+```bash
+curl -X POST http://localhost:3000/v1/tasks \
+  -H "Content-Type: application/json" \
+  -d '{ "title": "Publicar release", "description": "Build e notas", "status": "PENDING", "teamIds": [1, 2] }'
+```
+
+Buscar por id, alterar só o status (é o que o app faz na ação rápida), trocar os times e remover. Em `teamIds`, a lista enviada substitui a atual e `[]` desvincula todos.
+
+```bash
+curl http://localhost:3000/v1/tasks/3
+
+curl -X PATCH http://localhost:3000/v1/tasks/3 \
+  -H "Content-Type: application/json" \
+  -d '{ "status": "COMPLETED" }'
+
+curl -X PATCH http://localhost:3000/v1/tasks/3 \
+  -H "Content-Type: application/json" \
+  -d '{ "teamIds": [] }'
+
+curl -X DELETE http://localhost:3000/v1/tasks/3        # 204 sem corpo
+```
+
+### Erros
+
+Validação (400), com uma mensagem por campo em `details`:
+
+```bash
+curl -X POST http://localhost:3000/v1/tasks \
+  -H "Content-Type: application/json" \
+  -d '{ "title": "ab", "status": "DONE" }'
+```
+
+```json
+{
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Dados inválidos",
+    "details": [
+      "title precisa ter ao menos 3 caracteres",
+      "status precisa ser um de: PENDING, IN_PROGRESS, COMPLETED"
+    ]
+  }
+}
+```
+
+Não encontrado (404) e conflito de nome (409):
+
+```json
+{ "error": { "code": "NOT_FOUND", "message": "Time 999999 não encontrado" } }
+{ "error": { "code": "CONFLICT", "message": "Já existe um time com o nome \"Frontend\"" } }
+```
+
+Toda resposta carrega o header `x-request-id`. Envie o seu para correlacionar com os logs, ou a API gera um.
 
 ## 5. O que faria diferente em produção
 

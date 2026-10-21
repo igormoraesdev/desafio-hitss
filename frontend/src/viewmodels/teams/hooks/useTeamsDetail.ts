@@ -52,8 +52,6 @@ export const useTeamsDetail = (id?: number) => {
     isLoading: teamQuery.isPending,
     error: teamQuery.error,
     refetch: teamQuery.refetch,
-    removeTeam: deleteMutation.mutateAsync,
-    isRemoving: deleteMutation.isPending,
     onDeletePress,
   };
 };

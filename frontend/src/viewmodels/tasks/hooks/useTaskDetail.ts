@@ -28,7 +28,7 @@ export const useTaskDetail = (id?: number) => {
     try {
       await deleteMutation.mutateAsync(id);
       router.back();
-    } catch (error) {
+    } catch {
       Alert.alert("Erro", "Não foi possível excluir a tarefa");
     }
   };
@@ -46,8 +46,6 @@ export const useTaskDetail = (id?: number) => {
     isLoading: taskQuery.isPending,
     error: taskQuery.error,
     refetch: taskQuery.refetch,
-    removeTask: deleteMutation.mutateAsync,
-    isRemoving: deleteMutation.isPending,
     onDeletePress,
   };
 };
