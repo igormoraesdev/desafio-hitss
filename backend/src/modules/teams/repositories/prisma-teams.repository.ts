@@ -4,14 +4,29 @@ import { Prisma, Teams } from '../../../generated/prisma/client';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { CreateTeamDto } from '../dto/create-team.dto';
 import { UpdateTeamDto } from '../dto/update-team.dto';
-import { FindTeamsOptions, TeamsRepository } from './teams.repository';
+import {
+  FindTeamsOptions,
+  TeamNameInUseError,
+  TeamsRepository,
+} from './teams.repository';
+
+const UNIQUE_VIOLATION = 'P2002';
+
+const isUniqueViolation = (error: unknown): boolean =>
+  error instanceof Prisma.PrismaClientKnownRequestError &&
+  error.code === UNIQUE_VIOLATION;
 
 @Injectable()
 export class PrismaTeamsRepository implements TeamsRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  create(data: CreateTeamDto): Promise<Teams> {
-    return this.prisma.teams.create({ data });
+  async create(data: CreateTeamDto): Promise<Teams> {
+    try {
+      return await this.prisma.teams.create({ data });
+    } catch (error) {
+      if (isUniqueViolation(error)) throw new TeamNameInUseError(data.name);
+      throw error;
+    }
   }
 
   async findAll({
@@ -48,8 +63,15 @@ export class PrismaTeamsRepository implements TeamsRepository {
     return this.prisma.teams.findMany({ where: { id: { in: ids } } });
   }
 
-  update(id: number, data: UpdateTeamDto): Promise<Teams> {
-    return this.prisma.teams.update({ where: { id }, data });
+  async update(id: number, data: UpdateTeamDto): Promise<Teams> {
+    try {
+      return await this.prisma.teams.update({ where: { id }, data });
+    } catch (error) {
+      if (isUniqueViolation(error) && data.name !== undefined) {
+        throw new TeamNameInUseError(data.name);
+      }
+      throw error;
+    }
   }
 
   async remove(id: number): Promise<void> {

@@ -6,6 +6,13 @@ import { UpdateTeamDto } from '../dto/update-team.dto';
 
 export const TEAMS_REPOSITORY = Symbol('TEAMS_REPOSITORY');
 
+export class TeamNameInUseError extends Error {
+  constructor(readonly name: string) {
+    super(`Já existe um time com o nome "${name}"`);
+    this.name = 'TeamNameInUseError';
+  }
+}
+
 export interface FindTeamsOptions {
   filters: TeamFilters;
   page: PageParams;

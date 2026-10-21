@@ -9,6 +9,7 @@ import { Teams } from '../../generated/prisma/client';
 import { FindTeamsQueryDto } from './dto/find-teams-query.dto';
 import {
   TEAMS_REPOSITORY,
+  TeamNameInUseError,
   TeamsRepository,
 } from './repositories/teams.repository';
 import { TeamsService } from './teams.service';
@@ -75,6 +76,26 @@ describe('TeamsService', () => {
         service.create({ name: 'Alpha', color: '#00ff00' }),
       ).rejects.toBeInstanceOf(ConflictException);
       expect(repository.create).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('create (corrida no nome único)', () => {
+    it('converte a violação de unicidade do banco em ConflictException', async () => {
+      repository.findByName.mockResolvedValue(null);
+      repository.create.mockRejectedValue(new TeamNameInUseError('Alpha'));
+
+      await expect(
+        service.create({ name: 'Alpha', color: '#ff0000' }),
+      ).rejects.toBeInstanceOf(ConflictException);
+    });
+
+    it('repassa outros erros do repositório sem converter', async () => {
+      repository.findByName.mockResolvedValue(null);
+      repository.create.mockRejectedValue(new Error('conexão caiu'));
+
+      await expect(
+        service.create({ name: 'Alpha', color: '#ff0000' }),
+      ).rejects.toThrow('conexão caiu');
     });
   });
 
@@ -163,6 +184,18 @@ describe('TeamsService', () => {
 
       await expect(service.update(99, { name: 'X' })).rejects.toBeInstanceOf(
         NotFoundException,
+      );
+    });
+  });
+
+  describe('update (corrida no nome único)', () => {
+    it('converte a violação de unicidade do banco em ConflictException', async () => {
+      repository.findById.mockResolvedValue(team);
+      repository.findByName.mockResolvedValue(null);
+      repository.update.mockRejectedValue(new TeamNameInUseError('Beta'));
+
+      await expect(service.update(1, { name: 'Beta' })).rejects.toBeInstanceOf(
+        ConflictException,
       );
     });
   });

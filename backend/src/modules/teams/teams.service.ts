@@ -13,6 +13,7 @@ import { FindTeamsQueryDto } from './dto/find-teams-query.dto';
 import { UpdateTeamDto } from './dto/update-team.dto';
 import {
   TEAMS_REPOSITORY,
+  TeamNameInUseError,
   TeamsRepository,
 } from './repositories/teams.repository';
 
@@ -25,7 +26,7 @@ export class TeamsService {
 
   async create(dto: CreateTeamDto): Promise<Teams> {
     await this.verifyNameIsAvailable(dto.name);
-    const team = await this.repository.create(dto);
+    const team = await this.withNameConflict(() => this.repository.create(dto));
     this.logger.info({ teamId: team.id, teamName: team.name }, 'Time criado');
     return team;
   }
@@ -61,7 +62,9 @@ export class TeamsService {
     if (isRenaming) {
       await this.verifyNameIsAvailable(dto.name!);
     }
-    const updated = await this.repository.update(id, dto);
+    const updated = await this.withNameConflict(() =>
+      this.repository.update(id, dto),
+    );
     this.logger.info(
       { teamId: id, fields: Object.keys(dto) },
       'Time atualizado',
@@ -84,6 +87,18 @@ export class TeamsService {
       throw new NotFoundException(
         `Times não encontrados: ${missing.join(', ')}`,
       );
+    }
+  }
+
+  private async withNameConflict<T>(operation: () => Promise<T>): Promise<T> {
+    try {
+      return await operation();
+    } catch (error) {
+      if (error instanceof TeamNameInUseError) {
+        this.logger.warn({ teamName: error.name }, 'Nome de time em uso');
+        throw new ConflictException(error.message);
+      }
+      throw error;
     }
   }
 
