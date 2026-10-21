@@ -1,4 +1,5 @@
 import { TaskStatusKey } from "@/models/task";
+import { Teams } from "@/models/team";
 import Feather from "@expo/vector-icons/Feather";
 import { Box, createThemedComponent, Flex, Text } from "dripsy";
 import { Fragment, useState } from "react";
@@ -6,12 +7,15 @@ import { ActivityIndicator, Platform } from "react-native";
 import { TaskStatusModal } from "./TaskStatusModal";
 
 import { TASK_STATUS_FORMAT } from "@/viewmodels/tasks/constants/tasks";
+import { TeamChip } from "../teams/TeamChip";
 import { Button } from "../ui/Button";
 
 const MenuIcon = createThemedComponent(Feather);
 
+type TaskTeam = Pick<Teams, "id" | "name" | "color">;
+
 type TaskButtonProps = {
-  teamName: string;
+  teams: TaskTeam[];
   title: string;
   description?: string | null;
   status: TaskStatusKey;
@@ -36,6 +40,10 @@ const styles = {
     width: "100%",
     marginBottom: "$3",
   },
+  teams: {
+    flexWrap: "wrap",
+    gap: "$1",
+  },
   right: {
     alignItems: "center",
     gap: "$1",
@@ -52,7 +60,7 @@ const styles = {
 
 export const TaskButton = ({
   title,
-  teamName,
+  teams,
   description,
   status,
   isUpdating = false,
@@ -77,9 +85,17 @@ export const TaskButton = ({
             <Text variant="paragraphBold" sx={{ color: "$white" }}>
               {title}
             </Text>
-            <Text variant="small" sx={{ color: "$white" }}>
-              {teamName}
-            </Text>
+            {teams.length > 0 ? (
+              <Flex sx={styles.teams}>
+                {teams.map((team) => (
+                  <TeamChip key={team.id} name={team.name} color={team.color} />
+                ))}
+              </Flex>
+            ) : (
+              <Text variant="small" sx={{ color: "$darkGrey" }}>
+                Sem time
+              </Text>
+            )}
           </Box>
           <Flex sx={styles.right}>
             <Box sx={{ ...styles.badge, backgroundColor: format.color }}>

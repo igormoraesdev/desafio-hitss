@@ -1,5 +1,4 @@
 import { Tasks, TaskStatusKey } from "@/models/task";
-import { Teams } from "@/models/team";
 import { ActivityIndicator, Box, styled, Sx } from "dripsy";
 import { useState } from "react";
 import { FlatList, FlatListProps, Platform } from "react-native";
@@ -14,7 +13,6 @@ const DripsyFlatList = styled(FlatList)() as <T>(
 ) => React.ReactElement;
 
 type TasksListProps = {
-  team: Teams;
   tasks: Tasks[];
   search: string;
   filters: TaskFilterValues;
@@ -49,7 +47,6 @@ const styles = {
 } as const;
 
 export const TasksList = ({
-  team,
   tasks,
   search,
   filters,
@@ -99,7 +96,7 @@ export const TasksList = ({
             <TaskButton
               title={item.title}
               description={item.description}
-              teamName={team.name}
+              teams={item.teams}
               status={item.status}
               isUpdating={updatingTaskId === item.id}
               onPress={() => onTaskPress(item)}

@@ -5,14 +5,9 @@ const mockPush = jest.fn();
 const mockSetSearch = jest.fn();
 const mockSetFilters = jest.fn();
 const mockUpdateStatus = jest.fn().mockResolvedValue(undefined);
-const mockUseTeamsDetail = jest.fn();
 
 jest.mock("expo-router", () => ({
   useRouter: () => ({ push: mockPush }),
-}));
-
-jest.mock("@/viewmodels/teams/hooks/useTeamsDetail", () => ({
-  useTeamsDetail: (id: number) => mockUseTeamsDetail(id),
 }));
 
 jest.mock("@/viewmodels/tasks/hooks/useTasks", () => ({
@@ -23,7 +18,7 @@ jest.mock("@/viewmodels/tasks/hooks/useTasks", () => ({
         title: "Write the README",
         description: null,
         status: "PENDING",
-        teams: [],
+        teams: [{ id: 7, name: "Frontend", color: "#3B82F6", createdAt: "" }],
         createdAt: "",
       },
     ],
@@ -41,28 +36,15 @@ jest.mock("@/viewmodels/tasks/hooks/useTasks", () => ({
 }));
 
 describe("TasksSection", () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-    mockUseTeamsDetail.mockReturnValue({
-      team: { id: 7, name: "Frontend", color: "#3B82F6", createdAt: "" },
-    });
-  });
+  beforeEach(() => jest.clearAllMocks());
 
-  it("should render nothing until the team is loaded", () => {
-    mockUseTeamsDetail.mockReturnValue({ team: undefined });
-    renderWithTheme(<TasksSection teamId={7} />);
-    expect(screen.queryByText("Write the README")).toBeNull();
-  });
-
-  it("should load the team by the given id", () => {
-    renderWithTheme(<TasksSection teamId={7} />);
-    expect(mockUseTeamsDetail).toHaveBeenCalledWith(7);
-  });
-
-  it("should render the tasks with the team name", () => {
+  it("should render the tasks with their team chips", () => {
     renderWithTheme(<TasksSection teamId={7} />);
     expect(screen.getByText("Write the README")).toBeOnTheScreen();
     expect(screen.getByText("Frontend")).toBeOnTheScreen();
+    expect(screen.getByTestId("team-chip-dot")).toHaveStyle({
+      backgroundColor: "#3B82F6",
+    });
   });
 
   it("should navigate to the task detail when a task is pressed", () => {

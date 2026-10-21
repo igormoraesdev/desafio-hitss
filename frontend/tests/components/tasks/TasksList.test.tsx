@@ -5,14 +5,19 @@ import { ActivityIndicator } from "react-native";
 import { makeTask, makeTeam } from "../../utils/fixtures";
 import { fireEvent, renderWithTheme, screen } from "../../utils/render";
 
-const team = makeTeam({ id: 1, name: "Frontend" });
+const frontend = makeTeam({ id: 1, name: "Frontend", color: "#3B82F6" });
+const qa = makeTeam({ id: 2, name: "QA", color: "#F59E0B" });
 const tasks = [
-  makeTask({ id: 1, title: "Write the README" }),
-  makeTask({ id: 2, title: "Ship the app", status: "COMPLETED" }),
+  makeTask({ id: 1, title: "Write the README", teams: [frontend] }),
+  makeTask({
+    id: 2,
+    title: "Ship the app",
+    status: "COMPLETED",
+    teams: [frontend, qa],
+  }),
 ];
 
 const defaultProps = {
-  team,
   tasks,
   search: "",
   filters: DEFAULT_TASK_FILTERS,
@@ -37,11 +42,13 @@ describe("TasksList", () => {
     expect(screen.queryByText("Write the README")).toBeNull();
   });
 
-  it("should render one card per task with the team name", () => {
+  it("should render one card per task with its team chips", () => {
     renderWithTheme(<TasksList {...defaultProps} />);
     expect(screen.getByText("Write the README")).toBeOnTheScreen();
     expect(screen.getByText("Ship the app")).toBeOnTheScreen();
     expect(screen.getAllByText("Frontend")).toHaveLength(2);
+    expect(screen.getByText("QA")).toBeOnTheScreen();
+    expect(screen.getAllByTestId("team-chip-dot")).toHaveLength(3);
   });
 
   it("should call onTaskPress with the pressed task", () => {

@@ -1,10 +1,11 @@
 import { TaskButton } from "@/components/tasks/TaskButton";
 import { ActivityIndicator } from "react-native";
+import { makeTeam } from "../../utils/fixtures";
 import { fireEvent, renderWithTheme, screen } from "../../utils/render";
 
 const defaultProps = {
   title: "Write the README",
-  teamName: "Frontend",
+  teams: [makeTeam({ id: 1, name: "Frontend", color: "#3B82F6" })],
   description: "Document how to run the project",
   status: "PENDING" as const,
 };
@@ -17,6 +18,30 @@ describe("TaskButton", () => {
     expect(
       screen.getByText("Document how to run the project"),
     ).toBeOnTheScreen();
+  });
+
+  it("should render one chip per team with the team color", () => {
+    renderWithTheme(
+      <TaskButton
+        {...defaultProps}
+        teams={[
+          makeTeam({ id: 1, name: "Frontend", color: "#3B82F6" }),
+          makeTeam({ id: 2, name: "QA", color: "#F59E0B" }),
+        ]}
+      />,
+    );
+    expect(screen.getByText("Frontend")).toBeOnTheScreen();
+    expect(screen.getByText("QA")).toBeOnTheScreen();
+    const dots = screen.getAllByTestId("team-chip-dot");
+    expect(dots).toHaveLength(2);
+    expect(dots[0]).toHaveStyle({ backgroundColor: "#3B82F6" });
+    expect(dots[1]).toHaveStyle({ backgroundColor: "#F59E0B" });
+  });
+
+  it("should render a placeholder when the task has no team", () => {
+    renderWithTheme(<TaskButton {...defaultProps} teams={[]} />);
+    expect(screen.getByText("Sem time")).toBeOnTheScreen();
+    expect(screen.queryAllByTestId("team-chip-dot")).toHaveLength(0);
   });
 
   it("should render the status badge with the status label", () => {

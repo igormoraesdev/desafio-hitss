@@ -1,6 +1,5 @@
 import { Tasks, TaskStatusKey } from "@/models/task";
 import { useTasks } from "@/viewmodels/tasks/hooks/useTasks";
-import { useTeamsDetail } from "@/viewmodels/teams/hooks/useTeamsDetail";
 import { useRouter } from "expo-router";
 import { TaskFilterValues } from "./TasksFilters";
 import { TasksList } from "./TasksList";
@@ -11,7 +10,6 @@ type TasksSectionProps = {
 
 export const TasksSection = ({ teamId }: TasksSectionProps) => {
   const router = useRouter();
-  const { team } = useTeamsDetail(teamId);
   const {
     tasks,
     search,
@@ -46,13 +44,8 @@ export const TasksSection = ({ teamId }: TasksSectionProps) => {
     router.push("/tasks/new");
   };
 
-  if (!team) {
-    return null;
-  }
-
   return (
     <TasksList
-      team={team}
       tasks={tasks}
       search={search}
       filters={{
