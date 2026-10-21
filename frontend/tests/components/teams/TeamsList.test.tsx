@@ -81,4 +81,13 @@ describe("TeamList", () => {
     fireEvent.press(screen.getByText("Criar time"));
     expect(onCreatePress).toHaveBeenCalledTimes(1);
   });
+
+  it("should call onAllTasksPress when the all tasks button is pressed", () => {
+    const onAllTasksPress = jest.fn();
+    renderWithTheme(
+      <TeamList {...defaultProps} onAllTasksPress={onAllTasksPress} />,
+    );
+    fireEvent.press(screen.getByText("Ver todas as tarefas"));
+    expect(onAllTasksPress).toHaveBeenCalledTimes(1);
+  });
 });

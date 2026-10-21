@@ -24,6 +24,10 @@ export const TeamsSection = () => {
     router.push("/teams/new");
   };
 
+  const onAllTasksPress = () => {
+    router.push("/tasks");
+  };
+
   return (
     <TeamList
       teams={teams}
@@ -35,6 +39,7 @@ export const TeamsSection = () => {
       onSearchChange={setSearch}
       onTeamPress={onTeamPress}
       onCreatePress={onCreatePress}
+      onAllTasksPress={onAllTasksPress}
     />
   );
 };

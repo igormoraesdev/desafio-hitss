@@ -5,38 +5,55 @@ const mockPush = jest.fn();
 const mockSetSearch = jest.fn();
 const mockSetFilters = jest.fn();
 const mockUpdateStatus = jest.fn().mockResolvedValue(undefined);
+const mockUseTasks = jest.fn();
 
 jest.mock("expo-router", () => ({
   useRouter: () => ({ push: mockPush }),
 }));
 
 jest.mock("@/viewmodels/tasks/hooks/useTasks", () => ({
-  useTasks: () => ({
-    tasks: [
-      {
-        id: 1,
-        title: "Write the README",
-        description: null,
-        status: "PENDING",
-        teams: [{ id: 7, name: "Frontend", color: "#3B82F6", createdAt: "" }],
-        createdAt: "",
-      },
-    ],
-    search: "",
-    isLoading: false,
-    isLoadingMore: false,
-    filters: { limit: 10, sortBy: "createdAt", order: "desc" },
-    setSearch: mockSetSearch,
-    setFilters: mockSetFilters,
-    refetch: jest.fn(),
-    loadMore: jest.fn(),
-    updateStatus: mockUpdateStatus,
-    updatingTaskId: undefined,
-  }),
+  useTasks: (filters: unknown) => mockUseTasks(filters),
 }));
 
+const viewModel = {
+  tasks: [
+    {
+      id: 1,
+      title: "Write the README",
+      description: null,
+      status: "PENDING",
+      teams: [{ id: 7, name: "Frontend", color: "#3B82F6", createdAt: "" }],
+      createdAt: "",
+    },
+  ],
+  search: "",
+  isLoading: false,
+  isLoadingMore: false,
+  filters: { limit: 10, sortBy: "createdAt", order: "desc" },
+  setSearch: mockSetSearch,
+  setFilters: mockSetFilters,
+  refetch: jest.fn(),
+  loadMore: jest.fn(),
+  updateStatus: mockUpdateStatus,
+  updatingTaskId: undefined,
+};
+
 describe("TasksSection", () => {
-  beforeEach(() => jest.clearAllMocks());
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockUseTasks.mockReturnValue(viewModel);
+  });
+
+  it("should filter the tasks by team when a teamId is given", () => {
+    renderWithTheme(<TasksSection teamId={7} />);
+    expect(mockUseTasks).toHaveBeenCalledWith({ teamId: 7 });
+  });
+
+  it("should list the tasks of every team without a teamId", () => {
+    renderWithTheme(<TasksSection />);
+    expect(mockUseTasks).toHaveBeenCalledWith({});
+    expect(screen.getByText("Write the README")).toBeOnTheScreen();
+  });
 
   it("should render the tasks with their team chips", () => {
     renderWithTheme(<TasksSection teamId={7} />);

@@ -27,6 +27,7 @@ type TeamListProps = {
   onSearchChange: (text: string) => void;
   onTeamPress: (team: Teams) => void;
   onCreatePress?: () => void;
+  onAllTasksPress?: () => void;
 };
 
 const styles = {
@@ -45,6 +46,12 @@ const styles = {
     paddingVertical: "$3",
     alignItems: "center",
   },
+  actions: {
+    gap: "$2",
+  },
+  secondaryButton: {
+    backgroundColor: "$bgSecondary",
+  },
 } as const;
 
 export const TeamList = ({
@@ -57,6 +64,7 @@ export const TeamList = ({
   onSearchChange,
   onTeamPress,
   onCreatePress,
+  onAllTasksPress,
 }: TeamListProps) => {
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -114,7 +122,12 @@ export const TeamList = ({
         />
       )}
 
-      <Button onPress={onCreatePress}>Criar time</Button>
+      <Box sx={styles.actions}>
+        <Button onPress={onCreatePress}>Criar time</Button>
+        <Button onPress={onAllTasksPress} sx={styles.secondaryButton}>
+          Ver todas as tarefas
+        </Button>
+      </Box>
     </Box>
   );
 };

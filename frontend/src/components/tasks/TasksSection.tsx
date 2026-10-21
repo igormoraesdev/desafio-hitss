@@ -5,7 +5,7 @@ import { TaskFilterValues } from "./TasksFilters";
 import { TasksList } from "./TasksList";
 
 type TasksSectionProps = {
-  teamId: number;
+  teamId?: number;
 };
 
 export const TasksSection = ({ teamId }: TasksSectionProps) => {
@@ -22,7 +22,7 @@ export const TasksSection = ({ teamId }: TasksSectionProps) => {
     loadMore,
     updateStatus,
     updatingTaskId,
-  } = useTasks({ teamId });
+  } = useTasks(teamId === undefined ? {} : { teamId });
 
   const onChangeStatus = async (task: Tasks, status: TaskStatusKey) => {
     try {

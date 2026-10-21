@@ -46,6 +46,12 @@ describe("TeamsSection", () => {
     expect(mockPush).toHaveBeenCalledWith("/teams/new");
   });
 
+  it("should navigate to the global tasks list when all tasks is pressed", () => {
+    renderWithTheme(<TeamsSection />);
+    fireEvent.press(screen.getByText("Ver todas as tarefas"));
+    expect(mockPush).toHaveBeenCalledWith("/tasks");
+  });
+
   it("should forward the search text to the view model", () => {
     renderWithTheme(<TeamsSection />);
     fireEvent.changeText(screen.getByPlaceholderText("Busque um time"), "fro");
