@@ -8,6 +8,7 @@ import { Input } from "../ui/Input";
 type TeamCreateFormProps = {
   control: Control<CreateTeamFormSchema>;
   errors: FieldErrors<CreateTeamFormSchema>;
+  apiError?: string;
   isSubmitting: boolean;
   isEdit?: boolean;
   onSubmit: () => void;
@@ -16,6 +17,7 @@ type TeamCreateFormProps = {
 export const TeamCreateForm = ({
   control,
   errors,
+  apiError,
   isSubmitting,
   isEdit,
   onSubmit,
@@ -48,6 +50,9 @@ export const TeamCreateForm = ({
       />
       {errors.color && (
         <Text sx={{ color: "$red" }}>{errors.color.message}</Text>
+      )}
+      {apiError && (
+        <Text sx={{ color: "$red", textAlign: "center" }}>{apiError}</Text>
       )}
       <Button onPress={onSubmit} disabled={isSubmitting}>
         {isEdit ? "Salvar" : "Criar"}

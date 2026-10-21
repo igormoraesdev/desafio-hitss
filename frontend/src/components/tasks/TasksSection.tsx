@@ -24,12 +24,8 @@ export const TasksSection = ({ teamId }: TasksSectionProps) => {
     updatingTaskId,
   } = useTasks(teamId === undefined ? {} : { teamId });
 
-  const onChangeStatus = async (task: Tasks, status: TaskStatusKey) => {
-    try {
-      await updateStatus({ id: task.id, status });
-    } catch (error) {
-      console.warn("Falha ao atualizar o status da tarefa", error);
-    }
+  const onChangeStatus = (task: Tasks, status: TaskStatusKey) => {
+    updateStatus({ id: task.id, status });
   };
 
   const onFiltersChange = (next: TaskFilterValues) => {

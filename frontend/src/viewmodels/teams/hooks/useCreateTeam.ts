@@ -1,5 +1,6 @@
 import { Teams } from "@/models/team";
 import { CreateTeamFormSchema, createTeamSchema } from "@/schemas/team.schema";
+import { getApiErrorMessage } from "@/services/api";
 import { createTeams, updateTeam } from "@/services/teams.service";
 import { tasksKeys } from "@/viewmodels/tasks/constants/tasks";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -33,14 +34,23 @@ export const useCreateTeam = (team?: Teams) => {
     },
   });
 
-  const onSubmit = form.handleSubmit(async (values) => {
-    await saveMutation.mutateAsync(values);
-    router.back();
+  const onSubmit = form.handleSubmit((values) => {
+    saveMutation.mutate(values, { onSuccess: () => router.back() });
   });
+
+  const apiError = saveMutation.error
+    ? getApiErrorMessage(
+        saveMutation.error,
+        isEdit
+          ? "Não foi possível salvar o time"
+          : "Não foi possível criar o time",
+      )
+    : undefined;
 
   return {
     control: form.control,
     errors: form.formState.errors,
+    apiError,
     isSubmitting: saveMutation.isPending,
     isEdit,
     onSubmit,

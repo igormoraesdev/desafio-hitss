@@ -11,21 +11,23 @@ jest.mock("reanimated-color-picker", () => ({
   Preview: () => null,
 }));
 
-type HarnessProps = {
+type ComponentProps = {
   errors?: FieldErrors<CreateTeamFormSchema>;
   isSubmitting?: boolean;
   isEdit?: boolean;
+  apiError?: string;
   defaultValues?: CreateTeamFormSchema;
   onSubmit?: () => void;
 };
 
-const Harness = ({
+const Component = ({
   errors = {},
   isSubmitting = false,
   isEdit,
+  apiError,
   defaultValues = { name: "", color: "" },
   onSubmit = jest.fn(),
-}: HarnessProps) => {
+}: ComponentProps) => {
   const form = useForm<CreateTeamFormSchema>({ defaultValues });
   return (
     <TeamCreateForm
@@ -33,6 +35,7 @@ const Harness = ({
       errors={errors}
       isSubmitting={isSubmitting}
       isEdit={isEdit}
+      apiError={apiError}
       onSubmit={onSubmit}
     />
   );
@@ -40,21 +43,21 @@ const Harness = ({
 
 describe("TeamCreateForm", () => {
   it("should render the name input, the color picker and the submit button", () => {
-    renderWithTheme(<Harness />);
+    renderWithTheme(<Component />);
     expect(screen.getByPlaceholderText("Nome do time")).toBeOnTheScreen();
     expect(screen.getByText("Cor do time")).toBeOnTheScreen();
     expect(screen.getByText("Criar")).toBeOnTheScreen();
   });
 
   it("should render Salvar as the submit label in edit mode", () => {
-    renderWithTheme(<Harness isEdit />);
+    renderWithTheme(<Component isEdit />);
     expect(screen.getByText("Salvar")).toBeOnTheScreen();
     expect(screen.queryByText("Criar")).toBeNull();
   });
 
   it("should render the initial values", () => {
     renderWithTheme(
-      <Harness defaultValues={{ name: "Frontend", color: "#3B82F6" }} />,
+      <Component defaultValues={{ name: "Frontend", color: "#3B82F6" }} />,
     );
     expect(screen.getByPlaceholderText("Nome do time")).toHaveDisplayValue(
       "Frontend",
@@ -65,7 +68,7 @@ describe("TeamCreateForm", () => {
   });
 
   it("should update the name input when typing", () => {
-    renderWithTheme(<Harness />);
+    renderWithTheme(<Component />);
     const input = screen.getByPlaceholderText("Nome do time");
     fireEvent.changeText(input, "Design");
     expect(input).toHaveDisplayValue("Design");
@@ -73,21 +76,28 @@ describe("TeamCreateForm", () => {
 
   it("should call onSubmit when the submit button is pressed", () => {
     const onSubmit = jest.fn();
-    renderWithTheme(<Harness onSubmit={onSubmit} />);
+    renderWithTheme(<Component onSubmit={onSubmit} />);
     fireEvent.press(screen.getByText("Criar"));
     expect(onSubmit).toHaveBeenCalledTimes(1);
   });
 
   it("should not call onSubmit while submitting", () => {
     const onSubmit = jest.fn();
-    renderWithTheme(<Harness onSubmit={onSubmit} isSubmitting />);
+    renderWithTheme(<Component onSubmit={onSubmit} isSubmitting />);
     fireEvent.press(screen.getByText("Criar"));
     expect(onSubmit).not.toHaveBeenCalled();
   });
 
+  it("should render the API error above the submit button", () => {
+    renderWithTheme(<Component apiError='Já existe um time com o nome "QA"' />);
+    expect(
+      screen.getByText('Já existe um time com o nome "QA"'),
+    ).toBeOnTheScreen();
+  });
+
   it("should render the validation messages", () => {
     renderWithTheme(
-      <Harness
+      <Component
         errors={{
           name: { type: "min", message: "Informe o nome do time" },
           color: { type: "regex", message: "Escolha uma cor" },
@@ -99,7 +109,7 @@ describe("TeamCreateForm", () => {
   });
 
   it("should not render validation messages when there are no errors", () => {
-    renderWithTheme(<Harness />);
+    renderWithTheme(<Component />);
     expect(screen.queryByText("Informe o nome do time")).toBeNull();
     expect(screen.queryByText("Escolha uma cor")).toBeNull();
   });

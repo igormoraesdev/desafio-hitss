@@ -8,6 +8,7 @@ export const createTaskSchema = z.object({
     .string("Informe o título da tarefa")
     .trim()
     .min(1, "Informe o título da tarefa")
+    .min(3, "O título precisa ter ao menos 3 caracteres")
     .max(100, "O título pode ter no máximo 100 caracteres"),
   description: z
     .string()

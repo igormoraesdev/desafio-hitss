@@ -14,6 +14,7 @@ import { TaskStatusSelect } from "./TaskStatusSelect";
 type TaskCreateFormProps = {
   control: Control<CreateTaskFormInput, unknown, CreateTaskFormSchema>;
   errors: FieldErrors<CreateTaskFormInput>;
+  apiError?: string;
   isSubmitting: boolean;
   isEdit?: boolean;
   onSubmit: () => void;
@@ -26,6 +27,7 @@ type TaskCreateFormProps = {
 export const TaskCreateForm = ({
   control,
   errors,
+  apiError,
   isSubmitting,
   isEdit,
   onSubmit,
@@ -105,9 +107,14 @@ export const TaskCreateForm = ({
           <Text sx={{ color: "$red" }}>{errors.status.message}</Text>
         )}
       </Box>
-      <Button onPress={onSubmit} disabled={isSubmitting}>
-        {isEdit ? "Salvar" : "Criar"}
-      </Button>
+      <Box sx={{ gap: "$2" }}>
+        {apiError && (
+          <Text sx={{ color: "$red", textAlign: "center" }}>{apiError}</Text>
+        )}
+        <Button onPress={onSubmit} disabled={isSubmitting}>
+          {isEdit ? "Salvar" : "Criar"}
+        </Button>
+      </Box>
     </Box>
   );
 };

@@ -10,7 +10,10 @@ const FilterIcon = createThemedComponent(Feather);
 const StyledOverlay = styled(Pressable)();
 const StyledModalContent = styled(Pressable)();
 
-export type TaskFilterValues = Pick<FilterParams, "status" | "sortBy" | "order">;
+export type TaskFilterValues = Pick<
+  FilterParams,
+  "status" | "sortBy" | "order"
+>;
 
 type StatusOption = {
   label: string;

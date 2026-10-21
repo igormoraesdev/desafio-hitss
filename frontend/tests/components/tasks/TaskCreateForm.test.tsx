@@ -12,21 +12,23 @@ const teams = [
   makeTeam({ id: 2, name: "Backend" }),
 ];
 
-type HarnessProps = {
+type ComponentProps = {
   errors?: FieldErrors<CreateTaskFormInput>;
   isSubmitting?: boolean;
   isEdit?: boolean;
+  apiError?: string;
   onSubmit?: () => void;
   defaultValues?: Partial<CreateTaskFormInput>;
 };
 
-const Harness = ({
+const Component = ({
   errors = {},
   isSubmitting = false,
   isEdit,
+  apiError,
   onSubmit = jest.fn(),
   defaultValues,
-}: HarnessProps) => {
+}: ComponentProps) => {
   const form = useForm<CreateTaskFormInput, unknown, CreateTaskFormSchema>({
     defaultValues: { title: "", ...defaultValues },
   });
@@ -34,6 +36,7 @@ const Harness = ({
     <TaskCreateForm
       control={form.control}
       errors={errors}
+      apiError={apiError}
       isSubmitting={isSubmitting}
       isEdit={isEdit}
       onSubmit={onSubmit}
@@ -44,7 +47,7 @@ const Harness = ({
 
 describe("TaskCreateForm", () => {
   it("should render every field and the create button", () => {
-    renderWithTheme(<Harness />);
+    renderWithTheme(<Component />);
     expect(screen.getByPlaceholderText("Titulo")).toBeOnTheScreen();
     expect(screen.getByPlaceholderText("Descrição")).toBeOnTheScreen();
     expect(screen.getByText("Selecione os times")).toBeOnTheScreen();
@@ -53,14 +56,14 @@ describe("TaskCreateForm", () => {
   });
 
   it("should render the save button in edit mode", () => {
-    renderWithTheme(<Harness isEdit />);
+    renderWithTheme(<Component isEdit />);
     expect(screen.getByText("Salvar")).toBeOnTheScreen();
     expect(screen.queryByText("Criar")).toBeNull();
   });
 
   it("should render the initial values", () => {
     renderWithTheme(
-      <Harness
+      <Component
         defaultValues={{
           title: "Write the README",
           description: "Document it",
@@ -80,14 +83,14 @@ describe("TaskCreateForm", () => {
   });
 
   it("should update the title when typing", () => {
-    renderWithTheme(<Harness />);
+    renderWithTheme(<Component />);
     const input = screen.getByPlaceholderText("Titulo");
     fireEvent.changeText(input, "Ship the app");
     expect(input).toHaveDisplayValue("Ship the app");
   });
 
   it("should select teams through the teams select", () => {
-    renderWithTheme(<Harness />);
+    renderWithTheme(<Component />);
     fireEvent.press(screen.getByText("Selecione os times"));
     fireEvent.press(screen.getByText("Backend"));
     fireEvent.press(screen.getByText("Concluir"));
@@ -95,7 +98,7 @@ describe("TaskCreateForm", () => {
   });
 
   it("should select a status through the status select", () => {
-    renderWithTheme(<Harness />);
+    renderWithTheme(<Component />);
     fireEvent.press(screen.getByText("Selecione um status"));
     fireEvent.press(screen.getByText("Em progresso"));
     expect(screen.getByText("Em progresso")).toBeOnTheScreen();
@@ -104,21 +107,30 @@ describe("TaskCreateForm", () => {
 
   it("should call onSubmit when the submit button is pressed", () => {
     const onSubmit = jest.fn();
-    renderWithTheme(<Harness onSubmit={onSubmit} />);
+    renderWithTheme(<Component onSubmit={onSubmit} />);
     fireEvent.press(screen.getByText("Criar"));
     expect(onSubmit).toHaveBeenCalledTimes(1);
   });
 
   it("should not call onSubmit while submitting", () => {
     const onSubmit = jest.fn();
-    renderWithTheme(<Harness onSubmit={onSubmit} isSubmitting />);
+    renderWithTheme(<Component onSubmit={onSubmit} isSubmitting />);
     fireEvent.press(screen.getByText("Criar"));
     expect(onSubmit).not.toHaveBeenCalled();
   });
 
+  it("should render the API error above the submit button", () => {
+    renderWithTheme(
+      <Component apiError="Já existe uma tarefa com esse título" />,
+    );
+    expect(
+      screen.getByText("Já existe uma tarefa com esse título"),
+    ).toBeOnTheScreen();
+  });
+
   it("should render the validation messages", () => {
     renderWithTheme(
-      <Harness
+      <Component
         errors={{
           title: { type: "min", message: "Informe o título da tarefa" },
           description: { type: "max", message: "Descrição longa" },

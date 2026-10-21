@@ -1,5 +1,6 @@
 import { ApiResponse, FilterParams } from "@/models/api";
 import { Tasks, TaskStatusKey } from "@/models/task";
+import { getApiErrorMessage } from "@/services/api";
 import { deleteTask, findAllTasks, updateTask } from "@/services/tasks.service";
 import {
   InfiniteData,
@@ -9,6 +10,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+import { Alert } from "react-native";
 import { tasksKeys } from "../constants/tasks";
 
 const PAGE_SIZE = 10;
@@ -93,10 +95,14 @@ export const useTasks = (initialFilters: TaskFilters = {}) => {
       );
       return { snapshot };
     },
-    onError: (_, __, context) => {
+    onError: (error, _, context) => {
       context?.snapshot.forEach(([key, data]) => {
         queryClient.setQueryData(key, data);
       });
+      Alert.alert(
+        "Erro",
+        getApiErrorMessage(error, "Não foi possível atualizar o status"),
+      );
     },
     onSettled: (_, __, { id }) => invalidateTasks(id),
   });
@@ -126,7 +132,7 @@ export const useTasks = (initialFilters: TaskFilters = {}) => {
     error: tasksQuery.error,
     refetch: tasksQuery.refetch,
     loadMore,
-    updateStatus: updateStatusMutation.mutateAsync,
+    updateStatus: updateStatusMutation.mutate,
     updatingTaskId: updateStatusMutation.isPending
       ? updateStatusMutation.variables.id
       : undefined,

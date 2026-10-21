@@ -10,22 +10,28 @@ import {
   IsPositive,
   IsString,
   MaxLength,
+  MinLength,
 } from 'class-validator';
 import { trim } from 'src/common/utils/string';
 import { Status } from 'src/generated/prisma/enums';
 
+const TITLE_MIN_LENGTH = 3;
 const TITLE_MAX_LENGTH = 100;
 const DESCRIPTION_MAX_LENGTH = 500;
 
 export class CreateTaskDto {
   @ApiProperty({
     description: 'Título da tarefa. Espaços nas pontas são removidos.',
+    minLength: TITLE_MIN_LENGTH,
     maxLength: TITLE_MAX_LENGTH,
     example: 'Integrar app com a API',
   })
   @Transform(trim)
   @IsString({ message: 'title precisa ser do tipo string' })
   @IsNotEmpty({ message: 'title é obrigatório' })
+  @MinLength(TITLE_MIN_LENGTH, {
+    message: `title precisa ter ao menos ${TITLE_MIN_LENGTH} caracteres`,
+  })
   @MaxLength(TITLE_MAX_LENGTH, {
     message: `title precisa ter no máximo ${TITLE_MAX_LENGTH} caracteres`,
   })

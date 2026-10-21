@@ -4,6 +4,7 @@ import {
   CreateTaskFormSchema,
   createTaskSchema,
 } from "@/schemas/task.schema";
+import { getApiErrorMessage } from "@/services/api";
 import { createTasks, updateTask } from "@/services/tasks.service";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -37,14 +38,23 @@ export const useCreateTask = (task?: Tasks) => {
     },
   });
 
-  const onSubmit = form.handleSubmit(async (values) => {
-    await saveMutation.mutateAsync(values);
-    router.back();
+  const onSubmit = form.handleSubmit((values) => {
+    saveMutation.mutate(values, { onSuccess: () => router.back() });
   });
+
+  const apiError = saveMutation.error
+    ? getApiErrorMessage(
+        saveMutation.error,
+        isEdit
+          ? "Não foi possível salvar a tarefa"
+          : "Não foi possível criar a tarefa",
+      )
+    : undefined;
 
   return {
     control: form.control,
     errors: form.formState.errors,
+    apiError,
     isSubmitting: saveMutation.isPending,
     isEdit,
     onSubmit,
