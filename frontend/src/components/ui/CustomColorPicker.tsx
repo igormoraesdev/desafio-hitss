@@ -18,13 +18,14 @@ type CustomColorPickerProps = Omit<
   ComponentProps<typeof Pressable>,
   "children" | "style"
 > & {
+  value?: string;
   onChangeColor?: (item: string) => void;
 };
 
 export const CustomColorPicker = forwardRef<RNView, CustomColorPickerProps>(
-  ({ onChangeColor }, ref) => {
+  ({ value, onChangeColor }, ref) => {
     const [showModal, setShowModal] = useState(false);
-    const [color, setColor] = useState("#FFFFFF");
+    const [color, setColor] = useState(value || "#FFFFFF");
 
     const onSelectColor = ({ hex }: ColorFormatsObject) => {
       onChangeColor?.(hex);
@@ -61,6 +62,7 @@ export const CustomColorPicker = forwardRef<RNView, CustomColorPickerProps>(
           </Text>
 
           <Flex
+            testID="color-picker-swatch"
             sx={{
               width: 24,
               height: 24,

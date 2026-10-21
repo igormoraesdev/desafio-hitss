@@ -14,22 +14,25 @@ jest.mock("reanimated-color-picker", () => ({
 type HarnessProps = {
   errors?: FieldErrors<CreateTeamFormSchema>;
   isSubmitting?: boolean;
+  isEdit?: boolean;
+  defaultValues?: CreateTeamFormSchema;
   onSubmit?: () => void;
 };
 
 const Harness = ({
   errors = {},
   isSubmitting = false,
+  isEdit,
+  defaultValues = { name: "", color: "" },
   onSubmit = jest.fn(),
 }: HarnessProps) => {
-  const form = useForm<CreateTeamFormSchema>({
-    defaultValues: { name: "", color: "" },
-  });
+  const form = useForm<CreateTeamFormSchema>({ defaultValues });
   return (
     <TeamCreateForm
       control={form.control}
       errors={errors}
       isSubmitting={isSubmitting}
+      isEdit={isEdit}
       onSubmit={onSubmit}
     />
   );
@@ -41,6 +44,24 @@ describe("TeamCreateForm", () => {
     expect(screen.getByPlaceholderText("Nome do time")).toBeOnTheScreen();
     expect(screen.getByText("Cor do time")).toBeOnTheScreen();
     expect(screen.getByText("Criar")).toBeOnTheScreen();
+  });
+
+  it("should render Salvar as the submit label in edit mode", () => {
+    renderWithTheme(<Harness isEdit />);
+    expect(screen.getByText("Salvar")).toBeOnTheScreen();
+    expect(screen.queryByText("Criar")).toBeNull();
+  });
+
+  it("should render the initial values", () => {
+    renderWithTheme(
+      <Harness defaultValues={{ name: "Frontend", color: "#3B82F6" }} />,
+    );
+    expect(screen.getByPlaceholderText("Nome do time")).toHaveDisplayValue(
+      "Frontend",
+    );
+    expect(screen.getByTestId("color-picker-swatch")).toHaveStyle({
+      backgroundColor: "#3B82F6",
+    });
   });
 
   it("should update the name input when typing", () => {

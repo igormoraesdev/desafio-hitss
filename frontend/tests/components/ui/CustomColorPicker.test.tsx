@@ -36,6 +36,13 @@ describe("CustomColorPicker", () => {
     expect(screen.getByText("Cor do time")).toBeOnTheScreen();
   });
 
+  it("should use the given value as the initial color", () => {
+    renderWithTheme(<CustomColorPicker value="#3B82F6" />);
+    expect(screen.getByTestId("color-picker-swatch")).toHaveStyle({
+      backgroundColor: "#3B82F6",
+    });
+  });
+
   it("should open the picker when pressed", () => {
     renderWithTheme(<CustomColorPicker />);
     expect(screen.queryByTestId("color-picker")).toBeNull();

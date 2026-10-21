@@ -9,6 +9,7 @@ type TeamCreateFormProps = {
   control: Control<CreateTeamFormSchema>;
   errors: FieldErrors<CreateTeamFormSchema>;
   isSubmitting: boolean;
+  isEdit?: boolean;
   onSubmit: () => void;
 };
 
@@ -16,6 +17,7 @@ export const TeamCreateForm = ({
   control,
   errors,
   isSubmitting,
+  isEdit,
   onSubmit,
 }: TeamCreateFormProps) => {
   return (
@@ -38,14 +40,17 @@ export const TeamCreateForm = ({
         control={control}
         name="color"
         render={({ field }) => (
-          <CustomColorPicker onChangeColor={field.onChange} />
+          <CustomColorPicker
+            value={field.value}
+            onChangeColor={field.onChange}
+          />
         )}
       />
       {errors.color && (
         <Text sx={{ color: "$red" }}>{errors.color.message}</Text>
       )}
       <Button onPress={onSubmit} disabled={isSubmitting}>
-        Criar
+        {isEdit ? "Salvar" : "Criar"}
       </Button>
     </Box>
   );

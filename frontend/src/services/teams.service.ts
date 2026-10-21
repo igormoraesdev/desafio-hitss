@@ -2,7 +2,7 @@ import { ApiResponse, PaginationParams } from "@/models/api";
 import { Teams } from "@/models/team";
 import { httpClient } from "./api";
 
-type TeamsParams = {
+export type TeamsParams = {
   name: string;
   color: string;
 };
@@ -26,6 +26,15 @@ export const findAllTeams = async (params?: PaginationParams) => {
 
 export const findTeamById = async (id: number) => {
   const response = await httpClient.get<ApiResponse<Teams>>(`/v1/teams/${id}`);
+
+  return response.data;
+};
+
+export const updateTeam = async (id: number, params: Partial<TeamsParams>) => {
+  const response = await httpClient.patch<ApiResponse<Teams>>(
+    `/v1/teams/${id}`,
+    params,
+  );
 
   return response.data;
 };
